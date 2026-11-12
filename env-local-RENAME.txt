@@ -1,0 +1,13 @@
+# Tsahim Unaga — local settings (Supabase project: tsahim-unaga, Seoul)
+# NEVER commit this file to GitHub (.gitignore already excludes it).
+
+NEXT_PUBLIC_SUPABASE_URL=https://yonfngimzazifqcnjwxi.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_t2XBzbtiEDjYkyBzurss-g_yX-jXt-V
+
+# Paste the Secret key here: Supabase Dashboard -> Project Settings -> API Keys -> Secret keys
+# (starts with sb_secret_). It is the only value that could not be filled in automatically.
+SUPABASE_SECRET_KEY=
+
+# Generated random value. Keep it: changing it later makes every student pick pictures again.
+# Use the SAME value on Vercel.
+PICTURE_PASSWORD_PEPPER=--e_KEKMJWD5Yn4sbtyOPKMEyp7I_hi_WT_zea70m9YH9Czoz1jnltZKRrtaoNDb

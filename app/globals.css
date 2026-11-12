@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Fonts are loaded in app/layout.tsx with the cyrillic-ext subset (Ө, Ү live there).
+     Headings: Montserrat (bold, geometric). Body text: Noto Sans. */
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-heading-face), var(--font-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Design tokens: bright teal as the main colour, charcoal for bars and text,
+   purple and orange as accents. */
+@theme {
+  --color-brand-50: #e6f8fa;
+  --color-brand-100: #c2eff3;
+  --color-brand-200: #8fe2ea;
+  --color-brand-300: #52d1dd;
+  --color-brand-400: #1fc0cf;
+  --color-brand-500: #00adbc;
+  --color-brand-600: #0095a3;
+  --color-brand-700: #007a86;
+  --color-brand-800: #00616b;
+  --color-brand-900: #014b53;
+
+  --color-ink-50: #f5f6f8;
+  --color-ink-100: #e7e9ed;
+  --color-ink-700: #3e4651;
+  --color-ink-800: #333a42;
+  --color-ink-900: #292f36;
+  --color-ink-950: #1d2126;
+
+  --color-grape-100: #efe5f7;
+  --color-grape-500: #8c52ba;
+  --color-grape-600: #7442a0;
+  --color-grape-900: #3b1f57;
+
+  --color-sun-100: #fff1d6;
+  --color-sun-400: #ffb733;
+  --color-sun-500: #ffa400;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.01em;
+  }
+
+  /* Tailwind v4 leaves buttons with the default arrow cursor. */
+  button:not(:disabled),
+  [role='button']:not(:disabled),
+  select:not(:disabled),
+  label:has(input[type='checkbox']),
+  label:has(input[type='radio']) {
+    cursor: pointer;
+  }
+}
+
+/* Name cards drift in one after another on the "pick your name" screen. */
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.card-in {
+  animation: card-in 0.35s ease-out both;
+}
+
+/* Wrong picture password: a gentle "no". */
+@keyframes shake {
+  20%,
+  60% {
+    transform: translateX(-8px);
+  }
+  40%,
+  80% {
+    transform: translateX(8px);
+  }
+}
+.shake {
+  animation: shake 0.4s;
+}
+
+/* The mascot bobs slowly. */
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.bob {
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-in,
+  .shake,
+  .bob {
+    animation: none;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Decorative pattern of rounded blocks on the dark hero bands. */
+.hero-pattern {
+  background-color: var(--color-ink-900);
+  background-image:
+    radial-gradient(circle at 12% 20%, rgb(0 173 188 / 0.35) 0, transparent 28%),
+    radial-gradient(circle at 88% 80%, rgb(140 82 186 / 0.35) 0, transparent 30%),
+    linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+  background-size: auto, auto, 32px 32px, 32px 32px;
+}
