@@ -83,7 +83,7 @@ export function ComponentsEditor({
   return (
     <div className="space-y-4">
       {rows.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-5 text-center">
+        <div className="rounded-2xl border-[3px] border-dashed border-ink-300 bg-ink-50 p-5 text-center">
           <p className="text-sm text-slate-700">{mn.grades.setup.empty}</p>
           <div className="mt-3">
             <Button
@@ -109,11 +109,11 @@ export function ComponentsEditor({
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="text-left">
-                <th className="border-b border-slate-200 px-2 py-2 font-semibold">{mn.grades.setup.name}</th>
-                <th className="border-b border-slate-200 px-2 py-2 font-semibold">{mn.grades.setup.weight}</th>
-                <th className="border-b border-slate-200 px-2 py-2 font-semibold">{mn.grades.setup.source}</th>
-                <th className="border-b border-slate-200 px-2 py-2 font-semibold">{mn.grades.setup.missing}</th>
-                <th className="border-b border-slate-200 px-2 py-2" />
+                <th className="border-b-2 border-ink-900 px-2 py-2 font-extrabold">{mn.grades.setup.name}</th>
+                <th className="border-b-2 border-ink-900 px-2 py-2 font-extrabold">{mn.grades.setup.weight}</th>
+                <th className="border-b-2 border-ink-900 px-2 py-2 font-extrabold">{mn.grades.setup.source}</th>
+                <th className="border-b-2 border-ink-900 px-2 py-2 font-extrabold">{mn.grades.setup.missing}</th>
+                <th className="border-b-2 border-ink-900 px-2 py-2" />
               </tr>
             </thead>
             <tbody>
@@ -121,7 +121,7 @@ export function ComponentsEditor({
                 const locked = Boolean(r.id && lockedIds.includes(r.id));
                 return (
                   <tr key={r.key}>
-                    <td className="border-b border-slate-100 px-2 py-2">
+                    <td className="border-b border-ink-100 px-2 py-2">
                       <input
                         value={r.name}
                         onChange={(e) => change(r.key, { name: e.target.value })}
@@ -130,7 +130,7 @@ export function ComponentsEditor({
                         className={fieldClass('min-w-40')}
                       />
                     </td>
-                    <td className="border-b border-slate-100 px-2 py-2">
+                    <td className="border-b border-ink-100 px-2 py-2">
                       <div className="flex items-center gap-2">
                         <input
                           type="range"
@@ -155,7 +155,7 @@ export function ComponentsEditor({
                         <span className="text-slate-500">%</span>
                       </div>
                     </td>
-                    <td className="border-b border-slate-100 px-2 py-2">
+                    <td className="border-b border-ink-100 px-2 py-2">
                       <select
                         value={r.source}
                         onChange={(e) => change(r.key, { source: e.target.value as ComponentSource })}
@@ -169,7 +169,7 @@ export function ComponentsEditor({
                         ))}
                       </select>
                     </td>
-                    <td className="border-b border-slate-100 px-2 py-2">
+                    <td className="border-b border-ink-100 px-2 py-2">
                       {r.source === 'attendance' ? (
                         <span className="text-slate-400">—</span>
                       ) : (
@@ -184,7 +184,7 @@ export function ComponentsEditor({
                         </select>
                       )}
                     </td>
-                    <td className="border-b border-slate-100 px-2 py-2 text-right">
+                    <td className="border-b border-ink-100 px-2 py-2 text-right">
                       <button
                         type="button"
                         disabled={locked}
@@ -194,7 +194,7 @@ export function ComponentsEditor({
                           setRows((prev) => prev.filter((x) => x.key !== r.key));
                           setSaved(false);
                         }}
-                        className="rounded px-2 py-1 text-slate-500 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-30"
+                        className="rounded-lg border-2 border-transparent px-2 py-1 text-slate-500 hover:border-ink-900 hover:bg-red-50 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-30"
                       >
                         ✕
                       </button>
@@ -208,7 +208,7 @@ export function ComponentsEditor({
                 <td className="px-2 py-3 text-right font-bold">{mn.common.total}</td>
                 <td className="px-2 py-3">
                   <span
-                    className={`inline-block rounded-lg px-3 py-1 text-base font-extrabold tabular-nums ${
+                    className={`inline-block rounded-lg border-2 border-ink-900 px-3 py-1 font-mono text-base font-bold tabular-nums ${
                       total === 100 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-700'
                     }`}
                     role="status"

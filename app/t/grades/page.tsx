@@ -118,7 +118,7 @@ export default async function GradesPage({ searchParams }: { searchParams: Searc
                   </Link>
                 </>
               }
-              className="ring-2 ring-brand-300"
+              className="ring-4 ring-sun-400"
             >
               <ScoreGrid key={sheet.item.id} itemId={sheet.item.id} maxScore={Number(sheet.item.max_score)} rows={sortByName(sheet.rows)} />
             </Card>
@@ -207,7 +207,7 @@ export default async function GradesPage({ searchParams }: { searchParams: Searc
                       {own.length === 0 ? (
                         <p className="text-sm text-slate-500">{mn.grades.noItems}</p>
                       ) : (
-                        <ul className="divide-y divide-slate-100">
+                        <ul className="divide-y-2 divide-dashed divide-ink-100">
                           {own.map((it) => (
                             <li key={it.id} className="flex flex-wrap items-center justify-between gap-3 py-2 text-sm">
                               <span>

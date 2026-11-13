@@ -85,10 +85,10 @@ export function AttendanceSheet({
 
   return (
     <div>
-      <div className="sticky top-0 z-10 -mx-5 mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white/95 px-5 py-3 backdrop-blur">
+      <div className="sticky top-0 z-10 -mx-5 mb-4 flex flex-wrap items-center justify-between gap-3 border-y-2 border-ink-900 bg-white/95 px-5 py-3 backdrop-blur">
         <div className="flex flex-wrap gap-2">
           {ATTENDANCE_STATUSES.map((s) => (
-            <span key={s} className={`rounded-lg px-3 py-1.5 text-sm font-bold ${ATTENDANCE_STYLE[s].cell}`}>
+            <span key={s} className={`rounded-lg border-2 border-ink-900 px-2.5 py-1 text-sm font-extrabold ${ATTENDANCE_STYLE[s].cell}`}>
               {ATTENDANCE_STYLE[s].icon} {mn.attendanceStatus[s]} {counts[s]}
             </span>
           ))}
@@ -110,14 +110,14 @@ export function AttendanceSheet({
         </div>
       ) : null}
 
-      <ul className="divide-y divide-slate-100">
+      <ul className="divide-y-2 divide-dashed divide-ink-100">
         {rows.map((r, i) => {
           const row = state[r.student_id];
           return (
             <li key={r.student_id} className="py-2">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="w-7 text-right text-sm tabular-nums text-slate-500">{i + 1}</span>
-                <span className="min-w-40 flex-1 text-base font-semibold text-slate-900">
+                <span className="min-w-40 flex-1 text-base font-bold text-ink-900">
                   {displayName(r)}
                   {anyLogin && !r.logged_in ? (
                     <span className="ml-2 align-middle">
@@ -140,8 +140,8 @@ export function AttendanceSheet({
                         role="radio"
                         aria-checked={active}
                         onClick={() => update(r.student_id, { status: s })}
-                        className={`flex min-h-11 min-w-11 items-center gap-1 rounded-lg border px-3 text-sm font-bold transition-colors ${
-                          active ? ATTENDANCE_STYLE[s].active : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
+                        className={`flex min-h-11 min-w-11 items-center gap-1 rounded-xl border-2 px-3 text-sm font-extrabold transition-colors ${
+                          active ? ATTENDANCE_STYLE[s].active : 'border-ink-200 bg-white text-slate-600 hover:border-ink-900 hover:text-ink-900'
                         }`}
                       >
                         <span aria-hidden="true">{ATTENDANCE_STYLE[s].icon}</span>
@@ -156,8 +156,8 @@ export function AttendanceSheet({
                     aria-expanded={row.noteOpen}
                     aria-label={mn.attendance.note}
                     title={mn.attendance.note}
-                    className={`min-h-11 min-w-11 rounded-lg border px-2 text-sm ${
-                      row.note ? 'border-brand-400 bg-brand-50' : 'border-slate-300 bg-white hover:bg-slate-50'
+                    className={`min-h-11 min-w-11 rounded-xl border-2 px-2 text-sm ${
+                      row.note ? 'border-ink-900 bg-sun-100' : 'border-ink-200 bg-white hover:border-ink-900'
                     }`}
                   >
                     💬
@@ -171,7 +171,7 @@ export function AttendanceSheet({
                   maxLength={300}
                   placeholder={mn.attendance.notePlaceholder}
                   aria-label={`${displayName(r)} — ${mn.attendance.note}`}
-                  className="ml-10 mt-2 h-9 w-[calc(100%-2.5rem)] rounded-lg border border-slate-300 px-3 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  className="ml-10 mt-2 h-10 w-[calc(100%-2.5rem)] rounded-xl border-2 border-ink-900 px-3 text-sm font-semibold focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100"
                 />
               ) : null}
             </li>

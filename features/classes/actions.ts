@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { ANIMAL_KEYS, isUuid } from '@/lib/constants';
+import { CLASS_SECTIONS, isUuid, LOGO_BUCKET, LOGO_MAX_BYTES, LOGO_TYPES } from '@/lib/constants';
 import { errorCode, flashUrl, safeReturnTo } from '@/lib/flash';
 import type { ParsedStudent } from '@/lib/mn/names';
 import { createClient } from '@/lib/supabase/server';
@@ -14,19 +14,59 @@ const text = (fd: FormData, key: string) => String(fd.get(key) ?? '').trim();
 const checked = (fd: FormData, key: string) => fd.get(key) === 'on' || fd.get(key) === 'true';
 const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
 
+type Supabase = Awaited<ReturnType<typeof createClient>>;
+
+// --- class logos -------------------------------------------------------------
+/** The logo picture sent with the form, if the teacher picked one. */
+function logoFile(fd: FormData): File | null {
+  const file = fd.get('logo');
+  return file && typeof file !== 'string' && file.size > 0 ? file : null;
+}
+
+/** Stores the logo in the class's Storage folder; returns its public URL or an error code. */
+async function uploadLogo(supabase: Supabase, classId: string, file: File): Promise<{ url: string } | { error: string }> {
+  const ext = LOGO_TYPES[file.type];
+  if (!ext || file.size > LOGO_MAX_BYTES) return { error: 'logo_invalid' };
+  const bucket = supabase.storage.from(LOGO_BUCKET);
+  // a new name every time, so browsers never show a cached old logo
+  const path = `${classId}/${Date.now()}.${ext}`;
+  const { error } = await bucket.upload(path, file, { contentType: file.type, cacheControl: '31536000' });
+  if (error) return { error: 'logo_failed' };
+  return { url: bucket.getPublicUrl(path).data.publicUrl };
+}
+
+/** Deletes the class's logo files, except the one at `keepUrl`. */
+async function removeLogos(supabase: Supabase, classId: string, keepUrl?: string): Promise<void> {
+  const bucket = supabase.storage.from(LOGO_BUCKET);
+  const { data } = await bucket.list(classId);
+  const stale = (data ?? []).map((f) => `${classId}/${f.name}`).filter((path) => !keepUrl?.endsWith(`/${path}`));
+  if (stale.length > 0) await bucket.remove(stale);
+}
+
 // --- classes -----------------------------------------------------------------
 export async function createClass(fd: FormData): Promise<void> {
-  const supabase = await createClient();
+  const section = text(fd, 'section');
+  if (!CLASS_SECTIONS.includes(section)) redirect(flashUrl('/t/classes', 'error', 'section_required'));
   const color = text(fd, 'color');
-  const icon = text(fd, 'animal_icon');
+  const logo = logoFile(fd);
+
+  const supabase = await createClient();
   const { data, error } = await supabase.rpc('create_class', {
     p_grade: Number(text(fd, 'grade')),
-    p_section: text(fd, 'section'),
+    p_section: section,
     p_color: HEX_COLOR.test(color) ? color : null,
-    p_animal_icon: ANIMAL_KEYS.includes(icon) ? icon : null,
   });
   if (error || !data) redirect(flashUrl('/t/classes', 'error', errorCode(error)));
-  redirect(flashUrl(`/t/classes/${data}`, 'ok', 'created'));
+  const back = `/t/classes/${data}`;
+
+  if (logo) {
+    // the class exists by now: if the picture fails, the teacher retries in its settings
+    const saved = await uploadLogo(supabase, data, logo);
+    if ('error' in saved) redirect(flashUrl(back, 'error', saved.error));
+    const { error: logoError } = await supabase.from('classes').update({ animal_icon: saved.url }).eq('id', data);
+    if (logoError) redirect(flashUrl(back, 'error', 'logo_failed'));
+  }
+  redirect(flashUrl(back, 'ok', 'created'));
 }
 
 export async function updateClassSettings(fd: FormData): Promise<void> {
@@ -38,12 +78,22 @@ export async function updateClassSettings(fd: FormData): Promise<void> {
   // practice from home is only safe with the picture password, so it switches it on
   const picturePassword = checked(fd, 'picture_password_enabled') || homePractice;
   const color = text(fd, 'color');
-  const icon = text(fd, 'animal_icon');
   const lateAfter = Number(text(fd, 'late_after_minutes'));
   const lateCoef = Number(text(fd, 'late_coefficient'));
   const excused = text(fd, 'excused_policy');
 
   const supabase = await createClient();
+  // new logo: the URL of a freshly uploaded picture, '' when it was taken away, null = unchanged
+  let newIcon: string | null = null;
+  const logo = logoFile(fd);
+  if (logo) {
+    const saved = await uploadLogo(supabase, id, logo);
+    if ('error' in saved) redirect(flashUrl(back, 'error', saved.error));
+    newIcon = saved.url;
+  } else if (text(fd, 'logo_remove') === '1') {
+    newIcon = '';
+  }
+
   const { error } = await supabase
     .from('classes')
     .update({
@@ -51,13 +101,34 @@ export async function updateClassSettings(fd: FormData): Promise<void> {
       home_practice_enabled: homePractice,
       homeroom_teacher_name: text(fd, 'homeroom_teacher_name') || null,
       ...(HEX_COLOR.test(color) ? { color } : {}),
-      ...(ANIMAL_KEYS.includes(icon) ? { animal_icon: icon } : {}),
+      ...(newIcon !== null ? { animal_icon: newIcon } : {}),
       ...(Number.isFinite(lateAfter) && lateAfter >= 0 && lateAfter <= 60 ? { late_after_minutes: Math.round(lateAfter) } : {}),
       ...(Number.isFinite(lateCoef) && lateCoef >= 0 && lateCoef <= 1 ? { late_coefficient: lateCoef } : {}),
       ...(excused === 'exclude' || excused === 'count_present' ? { excused_policy: excused } : {}),
     })
     .eq('id', id);
-  redirect(error ? flashUrl(back, 'error', errorCode(error)) : flashUrl(back, 'ok', 'saved'));
+  if (error) redirect(flashUrl(back, 'error', errorCode(error)));
+  // the logo changed: the old picture is no longer needed
+  if (newIcon !== null) await removeLogos(supabase, id, newIcon);
+  redirect(flashUrl(back, 'ok', 'saved'));
+}
+
+export async function deleteClass(fd: FormData): Promise<void> {
+  const id = text(fd, 'id');
+  if (!isUuid(id)) redirect('/t/classes');
+  const back = safeReturnTo(fd.get('return_to'), `/t/classes/${id}`);
+  const supabase = await createClient();
+  const { data: cls } = await supabase.from('classes').select('name').eq('id', id).maybeSingle();
+  if (!cls) redirect(flashUrl('/t/classes', 'error', 'not_allowed'));
+  if (text(fd, 'confirm_name').toLocaleUpperCase('mn') !== cls.name.toLocaleUpperCase('mn')) {
+    redirect(flashUrl(back, 'error', 'confirm_mismatch'));
+  }
+  // Storage only lets a teacher of the class remove its files, so they go first
+  await removeLogos(supabase, id);
+  const { error } = await supabase.rpc('delete_class', { p_class_id: id });
+  if (error) redirect(flashUrl(back, 'error', errorCode(error)));
+  revalidatePath('/t', 'layout');
+  redirect(flashUrl('/t/classes', 'ok', 'class_deleted'));
 }
 
 export async function setClassStatus(fd: FormData): Promise<void> {

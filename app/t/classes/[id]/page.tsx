@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ClassLogo } from '@/components/ClassLogo';
+import { DeleteClassForm } from '@/components/teacher/DeleteClassForm';
 import { Flash } from '@/components/teacher/Flash';
 import { LessonButtons } from '@/components/teacher/LessonButtons';
+import { LogoPicker } from '@/components/teacher/LogoPicker';
 import { Badge, Button, buttonClass, Card, EmptyState, Field, Input, PageHeader, Select, tableClass, tdClass, thClass } from '@/components/ui';
 import {
   addScheduleSlot,
@@ -16,7 +19,7 @@ import {
   updateClassSettings,
 } from '@/features/classes/actions';
 import { requireTeacher } from '@/lib/auth/teacher';
-import { ANIMAL_KEYS, animalEmoji, CLASS_COLORS, isUuid } from '@/lib/constants';
+import { CLASS_COLORS, isUuid } from '@/lib/constants';
 import { fill } from '@/lib/errors';
 import { formatTime } from '@/lib/mn/dates';
 import { displayName, sortByName } from '@/lib/mn/names';
@@ -77,7 +80,6 @@ export default async function ClassDetailPage({
   const others = classes.filter((c) => c.id !== id);
   const online = roster.filter((s) => s.online).length;
   const back = `/t/classes/${id}`;
-  const animals = mn.animals as Record<string, string>;
 
   return (
     <div>
@@ -85,11 +87,11 @@ export default async function ClassDetailPage({
         title={
           <span className="flex items-center gap-3">
             <span
-              className="flex h-12 w-12 items-center justify-center rounded-full text-2xl"
+              className="flex h-12 w-12 items-center justify-center rounded-xl border-[3px] border-ink-900 text-2xl shadow-brut-sm"
               style={{ backgroundColor: cls.color }}
               aria-hidden="true"
             >
-              {animalEmoji(cls.animal_icon)}
+              <ClassLogo icon={cls.animal_icon} />
             </span>
             {cls.name}
             {isOpen ? <Badge tone="success">{mn.lesson.open}</Badge> : null}
@@ -107,6 +109,9 @@ export default async function ClassDetailPage({
                 {mn.lesson.kickAll}
               </Button>
             </form>
+            <a href="#delete-class" className={buttonClass('danger', 'sm')}>
+              <span aria-hidden="true">🗑</span> {mn.classes.deleteTitle}
+            </a>
           </>
         }
       />
@@ -141,7 +146,7 @@ export default async function ClassDetailPage({
                       <tr key={s.student_id}>
                         <td className={`${tdClass} w-10 tabular-nums text-slate-500`}>{i + 1}</td>
                         <td className={tdClass}>
-                          <Link href={`/t/students/${s.student_id}`} className="font-semibold text-slate-900 hover:underline">
+                          <Link href={`/t/students/${s.student_id}`} className="font-bold text-ink-900 hover:text-brand-600 hover:underline">
                             {displayName(s)}
                           </Link>
                         </td>
@@ -196,7 +201,7 @@ export default async function ClassDetailPage({
               </div>
             )}
 
-            <form action={addStudent} className="mt-5 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-[1fr_6rem_8rem_auto] sm:items-end">
+            <form action={addStudent} className="mt-5 grid gap-3 border-t-2 border-dashed border-ink-200 pt-4 sm:grid-cols-[1fr_6rem_8rem_auto] sm:items-end">
               <input type="hidden" name="class_id" value={id} />
               <Field label={mn.students.firstName}>
                 <Input name="first_name" maxLength={60} required />
@@ -246,7 +251,7 @@ export default async function ClassDetailPage({
             <dl className="space-y-2 text-sm">
               <div className="flex items-center justify-between gap-3">
                 <dt className="text-slate-600">{mn.classes.classCode}</dt>
-                <dd className="font-mono text-base font-bold tracking-wider">{cls.class_code}</dd>
+                <dd className="rounded-lg border-2 border-ink-900 bg-sun-100 px-2 py-0.5 font-mono text-base font-bold tracking-wider">{cls.class_code}</dd>
               </div>
             </dl>
             <Link href={`/present/qr/${id}`} target="_blank" className={buttonClass('secondary', 'md', 'mt-3 w-full')}>
@@ -289,26 +294,17 @@ export default async function ClassDetailPage({
               <Field label={mn.classes.homeroom}>
                 <Input name="homeroom_teacher_name" maxLength={60} defaultValue={cls.homeroom_teacher_name ?? ''} />
               </Field>
-              <div className="grid grid-cols-2 gap-3">
-                <Field label={mn.classes.animal}>
-                  <Select name="animal_icon" defaultValue={cls.animal_icon}>
-                    {ANIMAL_KEYS.map((key) => (
-                      <option key={key} value={key}>
-                        {animalEmoji(key)} {animals[key] ?? key}
-                      </option>
-                    ))}
-                  </Select>
-                </Field>
-                <Field label={mn.classes.color}>
-                  <Select name="color" defaultValue={cls.color}>
-                    {(CLASS_COLORS.includes(cls.color) ? CLASS_COLORS : [cls.color, ...CLASS_COLORS]).map((color, i) => (
-                      <option key={color} value={color}>
-                        {fill(mn.classes.colorOption, { n: i + 1 })}
-                      </option>
-                    ))}
-                  </Select>
-                </Field>
-              </div>
+              {/* keyed by the logo, so a saved upload resets the picker */}
+              <LogoPicker key={cls.animal_icon} current={cls.animal_icon} />
+              <Field label={mn.classes.color}>
+                <Select name="color" defaultValue={cls.color}>
+                  {(CLASS_COLORS.includes(cls.color) ? CLASS_COLORS : [cls.color, ...CLASS_COLORS]).map((color, i) => (
+                    <option key={color} value={color}>
+                      {fill(mn.classes.colorOption, { n: i + 1 })}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
               <Button type="submit" className="w-full">
                 {mn.common.save}
               </Button>
@@ -319,7 +315,7 @@ export default async function ClassDetailPage({
             {slots.length === 0 ? (
               <p className="text-sm text-slate-600">{mn.classes.noSchedule}</p>
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y-2 divide-dashed divide-ink-100">
                 {slots.map((slot) => (
                   <li key={slot.id} className="flex items-center justify-between gap-2 py-2 text-sm">
                     <span>
@@ -339,7 +335,7 @@ export default async function ClassDetailPage({
                 ))}
               </ul>
             )}
-            <form action={addScheduleSlot} className="mt-4 grid grid-cols-[1fr_auto_auto] items-end gap-2 border-t border-slate-100 pt-4">
+            <form action={addScheduleSlot} className="mt-4 grid grid-cols-[1fr_auto_auto] items-end gap-2 border-t-2 border-dashed border-ink-200 pt-4">
               <input type="hidden" name="class_id" value={id} />
               <Field label={mn.classes.weekday}>
                 <Select name="weekday" defaultValue="1">
@@ -372,6 +368,12 @@ export default async function ClassDetailPage({
               </Button>
             </form>
           </Card>
+
+          <div id="delete-class" className="scroll-mt-6">
+            <Card title={mn.classes.deleteTitle}>
+              <DeleteClassForm classId={id} name={cls.name} returnTo={back} />
+            </Card>
+          </div>
         </div>
       </div>
     </div>

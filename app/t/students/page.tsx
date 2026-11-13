@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { Flash } from '@/components/teacher/Flash';
 import { Button, buttonClass, Card, ClassChip, EmptyState, Field, Input, PageHeader, Select, tableClass, tdClass, thClass } from '@/components/ui';
 import { requireTeacher } from '@/lib/auth/teacher';
-import { animalEmoji } from '@/lib/constants';
 import { fill } from '@/lib/errors';
 import { compareNames, displayName } from '@/lib/mn/names';
 import { param, type SearchParams } from '@/lib/params';
@@ -20,7 +19,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Sea
   const classFilter = param(sp.class) ?? '';
 
   const [{ data }, classes] = await Promise.all([supabase.rpc('all_students'), loadClasses(supabase)]);
-  const emojiByClass = new Map(classes.map((c) => [c.id, animalEmoji(c.animal_icon)]));
+  const iconByClass = new Map(classes.map((c) => [c.id, c.animal_icon]));
   const all = (data ?? []) as ListedStudent[];
   const list = all
     .filter((s) => !classFilter || s.class_id === classFilter)
@@ -76,13 +75,13 @@ export default async function StudentsPage({ searchParams }: { searchParams: Sea
                   <tr key={s.student_id}>
                     <td className={`${tdClass} w-10 tabular-nums text-slate-500`}>{i + 1}</td>
                     <td className={tdClass}>
-                      <Link href={`/t/students/${s.student_id}`} className="font-semibold text-slate-900 hover:underline">
+                      <Link href={`/t/students/${s.student_id}`} className="font-bold text-ink-900 hover:text-brand-600 hover:underline">
                         {displayName(s)}
                       </Link>
                     </td>
                     <td className={tdClass}>
                       <Link href={`/t/classes/${s.class_id}`}>
-                        <ClassChip name={s.class_name} color={s.color} emoji={emojiByClass.get(s.class_id) ?? ''} />
+                        <ClassChip name={s.class_name} color={s.color} icon={iconByClass.get(s.class_id) ?? ''} />
                       </Link>
                     </td>
                   </tr>

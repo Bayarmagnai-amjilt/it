@@ -21,12 +21,12 @@ declare
   v_item_part uuid;
   v_item_quiz uuid;
   class_defs text[][] := array[
-    ['1', 'А', '#F59E0B', 'camel_calf'], ['1', 'Б', '#EF4444', 'foal'],
-    ['2', 'А', '#10B981', 'lamb'],       ['2', 'Б', '#3B82F6', 'kid'],
-    ['3', 'А', '#8B5CF6', 'calf'],       ['3', 'Б', '#EC4899', 'puppy'],
-    ['4', 'А', '#14B8A6', 'marmot'],     ['4', 'Б', '#F97316', 'eagle'],
-    ['4', 'В', '#6366F1', 'deer'],       ['5', 'А', '#84CC16', 'rabbit'],
-    ['5', 'Б', '#06B6D4', 'fox'],        ['5', 'В', '#D946EF', 'swan']];
+    ['1', '1', '#F59E0B'], ['1', '2', '#EF4444'],
+    ['2', '1', '#10B981'], ['2', '2', '#3B82F6'],
+    ['3', '1', '#8B5CF6'], ['3', '2', '#EC4899'],
+    ['4', '1', '#14B8A6'], ['4', '2', '#F97316'],
+    ['4', '3', '#6366F1'], ['5', '1', '#84CC16'],
+    ['5', '2', '#06B6D4'], ['5', '3', '#D946EF']];
   boys text[] := array['Тэмүүлэн', 'Билгүүн', 'Ананд', 'Тэнүүн', 'Хүслэн', 'Эрхэс', 'Ирмүүн', 'Дөлгөөн',
     'Төгөлдөр', 'Тэргэл', 'Жавхлан', 'Тамир', 'Тулга', 'Цэлмэг', 'Золбоо', 'Өлзий', 'Мөнх-Эрдэнэ',
     'Сод-Эрдэнэ', 'Амин-Эрдэнэ', 'Билгүүдэй', 'Ганбат', 'Наранбаатар', 'Үүрээ', 'Чингүүн', 'Эрдэм'];
@@ -73,8 +73,8 @@ begin
   on conflict (name) do nothing;
 
   for i in 1 .. array_length(class_defs, 1) loop
-    insert into classes (school_year_id, grade, section, color, animal_icon)
-    values (v_year, class_defs[i][1]::smallint, class_defs[i][2], class_defs[i][3], class_defs[i][4])
+    insert into classes (school_year_id, grade, section, color)
+    values (v_year, class_defs[i][1]::smallint, class_defs[i][2], class_defs[i][3])
     returning id into v_class;
     insert into class_practice_settings (class_id) values (v_class);
 
@@ -100,8 +100,8 @@ begin
       values (v_student, v_class, v_year, make_date(v_y, 9, 1));
     end loop;
 
-    -- 4Б gets two students with the same first name, told apart by the initial
-    if class_defs[i][1] = '4' and class_defs[i][2] = 'Б' then
+    -- 4-2 gets two students with the same first name, told apart by the initial
+    if class_defs[i][1] = '4' and class_defs[i][2] = '2' then
       update students s set first_name = 'Тэмүүлэн', family_initial = x.ini, gender = 'male'
         from (select e.student_id, (array['Б', 'Д'])[(row_number() over (order by e.student_id))::integer] as ini
                 from enrollments e where e.class_id = v_class

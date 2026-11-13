@@ -114,7 +114,7 @@ export default async function AttendanceHistoryPage({ searchParams }: { searchPa
         <Card>
           <div className="mb-3 flex flex-wrap gap-2 text-xs">
             {ATTENDANCE_STATUSES.map((s) => (
-              <span key={s} className={`rounded px-2 py-1 font-semibold ${ATTENDANCE_STYLE[s].cell}`}>
+              <span key={s} className={`rounded-lg border-2 border-ink-900 px-2 py-0.5 font-bold ${ATTENDANCE_STYLE[s].cell}`}>
                 {mn.attendanceShort[s]} = {mn.attendanceStatus[s]}
               </span>
             ))}
@@ -123,16 +123,16 @@ export default async function AttendanceHistoryPage({ searchParams }: { searchPa
             <table className="border-collapse text-sm">
               <thead>
                 <tr>
-                  <th className="sticky left-0 z-10 border-b border-slate-200 bg-slate-50 px-3 py-2 text-left font-semibold">{mn.common.name}</th>
+                  <th className="sticky left-0 z-10 border-b-2 border-ink-900 bg-ink-50 px-3 py-2 text-left font-extrabold">{mn.common.name}</th>
                   {lessons.map((l) => (
-                    <th key={l.id} className="border-b border-slate-200 bg-slate-50 px-1 py-2 text-center font-semibold tabular-nums">
+                    <th key={l.id} className="border-b-2 border-ink-900 bg-ink-50 px-1 py-2 text-center font-mono text-xs font-bold tabular-nums">
                       <Link href={`/t/attendance?class=${cls.id}&date=${l.held_on}&period=${l.period}`} className="hover:underline">
                         {formatDayMonth(l.held_on)}
                         {l.period > 1 ? <span className="block text-[10px] text-slate-500">#{l.period}</span> : null}
                       </Link>
                     </th>
                   ))}
-                  <th className="border-b border-slate-200 bg-slate-50 px-3 py-2 text-right font-semibold">%</th>
+                  <th className="border-b-2 border-ink-900 bg-ink-50 px-3 py-2 text-right font-extrabold">%</th>
                 </tr>
               </thead>
               <tbody>
@@ -141,16 +141,16 @@ export default async function AttendanceHistoryPage({ searchParams }: { searchPa
                   const percent = attendancePercent(countStatuses(statuses), Number(settings.late_coefficient), settings.excused_policy);
                   return (
                     <tr key={s.student_id}>
-                      <td className="sticky left-0 z-10 whitespace-nowrap border-b border-slate-100 bg-white px-3 py-1.5 font-semibold">
+                      <td className="sticky left-0 z-10 whitespace-nowrap border-b border-ink-100 bg-white px-3 py-1.5 font-bold">
                         <Link href={`/t/students/${s.student_id}`} className="hover:underline">
                           {displayName(s)}
                         </Link>
                       </td>
                       {statuses.map((status, i) => (
-                        <td key={lessons[i].id} className="border-b border-slate-100 p-0.5 text-center">
+                        <td key={lessons[i].id} className="border-b border-ink-100 p-0.5 text-center">
                           {status ? (
                             <span
-                              className={`inline-flex h-7 w-7 items-center justify-center rounded text-xs font-bold ${ATTENDANCE_STYLE[status].cell}`}
+                              className={`inline-flex h-7 w-7 items-center justify-center rounded-md text-xs font-extrabold ${ATTENDANCE_STYLE[status].cell}`}
                               title={mn.attendanceStatus[status]}
                             >
                               {mn.attendanceShort[status]}
@@ -161,7 +161,7 @@ export default async function AttendanceHistoryPage({ searchParams }: { searchPa
                         </td>
                       ))}
                       <td
-                        className={`border-b border-slate-100 px-3 py-1.5 text-right font-bold tabular-nums ${
+                        className={`border-b border-ink-100 px-3 py-1.5 text-right font-mono font-bold tabular-nums ${
                           percent !== null && percent < LOW_PERCENT ? 'bg-red-50 text-red-700' : ''
                         }`}
                       >

@@ -12,7 +12,7 @@ export default async function TeacherLoginPage({ searchParams }: { searchParams:
   const errors = mn.teacherAuth.errors as Record<string, string>;
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-black">{mn.teacherAuth.loginTitle}</h1>
+      <h1 className="text-2xl font-extrabold">{mn.teacherAuth.loginTitle}</h1>
       {error ? <Alert tone="error">{errors[error] ?? mn.errors.generic}</Alert> : null}
       <form action={teacherLogin} className="space-y-4">
         <Field label={mn.teacherAuth.email}>
@@ -25,7 +25,7 @@ export default async function TeacherLoginPage({ searchParams }: { searchParams:
           {mn.teacherAuth.loginButton}
         </Button>
       </form>
-      <Link href="/teacher/forgot-password" className="block text-center text-sm font-semibold text-brand-700 hover:underline">
+      <Link href="/teacher/forgot-password" className="block text-center text-sm font-extrabold text-brand-600 hover:underline">
         {mn.teacherAuth.forgotLink}
       </Link>
     </div>

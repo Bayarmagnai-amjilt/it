@@ -1,7 +1,9 @@
 import Link from 'next/link';
+import { ClassLogo } from '@/components/ClassLogo';
+import { Mascot } from '@/components/Mascot';
+import { buttonClass } from '@/components/ui';
 import { studentLogout } from '@/features/auth/actions';
 import { getStudentSession } from '@/lib/auth/student';
-import { animalEmoji } from '@/lib/constants';
 import { fill } from '@/lib/errors';
 import { compareText, displayName } from '@/lib/mn/names';
 import { createAdminClient } from '@/lib/supabase/admin';
@@ -27,9 +29,9 @@ export default async function ClassPickerPage() {
   if (classes === null) {
     return (
       <div className="px-4 py-16">
-        <div className="mx-auto max-w-xl rounded-3xl border border-ink-100 bg-white p-8 text-center shadow-lg">
+        <div className="mx-auto max-w-xl rounded-3xl border-[3px] border-ink-900 bg-white p-8 text-center shadow-brut-lg">
           <div className="text-6xl" aria-hidden="true">🔌</div>
-          <h1 className="mt-4 text-2xl font-black">{mn.public.notConfiguredTitle}</h1>
+          <h1 className="mt-4 text-2xl font-extrabold">{mn.public.notConfiguredTitle}</h1>
           <p className="mt-2 text-ink-700">{mn.public.notConfiguredHint}</p>
         </div>
       </div>
@@ -45,90 +47,86 @@ export default async function ClassPickerPage() {
 
   return (
     <>
-      {/* Hero band */}
-      <section className="hero-pattern text-white">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-          <p className="font-heading text-sm font-bold uppercase tracking-[0.2em] text-brand-300">{mn.public.heroEyebrow}</p>
-          <h1 className="mt-3 max-w-3xl text-4xl font-black leading-tight sm:text-6xl">{mn.public.heroTitle}</h1>
-          <p className="mt-4 max-w-2xl text-lg text-ink-100 sm:text-xl">{mn.public.heroHint}</p>
-
-          {session ? (
-            <div className="mt-8 flex flex-wrap items-center gap-4 rounded-2xl bg-white/10 p-4 ring-1 ring-white/20 backdrop-blur">
-              <p className="text-xl font-bold">
-                <span aria-hidden="true">{animalEmoji(session.animal_icon)} </span>
-                {fill(mn.public.alreadyIn, { name: displayName(session) })}
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href="/s/home"
-                  className="inline-flex min-h-14 items-center rounded-full bg-brand-500 px-8 font-heading text-xl font-bold text-white hover:bg-brand-400"
-                >
-                  {mn.public.continue} <span aria-hidden="true">&nbsp;→</span>
-                </Link>
-                <form action={studentLogout}>
-                  <button
-                    type="submit"
-                    className="min-h-14 rounded-full border-2 border-white px-8 font-heading text-xl font-bold text-white hover:bg-white hover:text-ink-900"
-                  >
-                    {mn.common.logout}
-                  </button>
-                </form>
-              </div>
-            </div>
-          ) : (
-            <a
-              href="#classes"
-              className="mt-8 inline-flex min-h-14 items-center rounded-full bg-brand-500 px-8 font-heading text-xl font-bold text-white shadow-lg hover:bg-brand-400"
-            >
-              {mn.public.pickClass} <span aria-hidden="true">&nbsp;↓</span>
-            </a>
-          )}
+      {/* Greeting; a student who is still logged in gets a dark "continue" banner */}
+      <section className="mx-auto max-w-6xl px-4 pt-10 sm:pt-14">
+        <div className="flex items-center gap-5">
+          <Mascot className="bob hidden h-24 w-24 sm:block" />
+          <div>
+            <p className="font-mono text-xs font-bold uppercase tracking-widest text-brand-600">{mn.public.heroEyebrow}</p>
+            <h1 className="mt-2 text-3xl font-extrabold leading-tight text-ink-900 sm:text-5xl">{mn.public.heroTitle}</h1>
+            <p className="mt-3 max-w-2xl text-lg font-semibold text-slate-600">{mn.public.heroHint}</p>
+            {!session ? (
+              <a href="#classes" className={buttonClass('accent', 'lg', 'mt-6 min-h-14 text-lg')}>
+                {mn.public.pickClass} <span aria-hidden="true">↓</span>
+              </a>
+            ) : null}
+          </div>
         </div>
+
+        {session ? (
+          <div className="hero-pattern mt-8 flex flex-wrap items-center justify-between gap-4 rounded-3xl border-[3px] border-ink-900 px-6 py-6 text-white shadow-brut-blush sm:px-8">
+            <p className="text-xl font-extrabold sm:text-2xl">
+              <ClassLogo icon={session.animal_icon} />{' '}
+              {fill(mn.public.alreadyIn, { name: displayName(session) })}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/s/home" className={buttonClass('accent', 'lg', 'min-h-14 text-lg')}>
+                {mn.public.continue} <span aria-hidden="true">→</span>
+              </Link>
+              <form action={studentLogout}>
+                <button type="submit" className={buttonClass('secondary', 'lg', 'min-h-14 text-lg')}>
+                  {mn.common.logout}
+                </button>
+              </form>
+            </div>
+          </div>
+        ) : null}
       </section>
 
       {/* Class cards */}
-      <div id="classes" className="mx-auto max-w-6xl scroll-mt-4 space-y-10 px-4 py-12">
+      <div id="classes" className="mx-auto max-w-6xl scroll-mt-4 space-y-10 px-4 py-10 sm:py-12">
         {byGrade.length === 0 ? (
-          <p className="text-center text-xl text-ink-700">{mn.public.noClasses}</p>
+          <p className="text-center text-xl font-semibold text-ink-700">{mn.public.noClasses}</p>
         ) : (
           byGrade.map(({ grade, classes: list }) => (
             <section key={grade} aria-label={fill(mn.public.gradeLabel, { grade })}>
               <div className="mb-4 flex items-center gap-3">
-                <h2 className="text-2xl font-black text-ink-900">{fill(mn.public.gradeLabel, { grade })}</h2>
-                <span className="h-1 flex-1 rounded-full bg-ink-100" aria-hidden="true" />
+                <h2 className="text-xl font-bold text-ink-900 sm:text-2xl">{fill(mn.public.gradeLabel, { grade })}</h2>
+                <span className="flex-1 border-t-[3px] border-dashed border-ink-200" aria-hidden="true" />
               </div>
               <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
                 {list.map((c, i) => (
                   <Link
                     key={c.id}
                     href={`/class/${c.id}`}
-                    className="card-in group flex flex-col overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500"
+                    className="card-in lift group flex flex-col gap-4 rounded-2xl border-[3px] border-ink-900 bg-white p-4 shadow-brut focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-300"
                     style={{ animationDelay: `${i * 60}ms` }}
                     aria-label={`${c.name}${c.is_open ? '' : ` — ${mn.public.lockedShort}`}`}
                   >
-                    <span
-                      className="relative flex h-28 items-center justify-center text-6xl"
-                      style={{ backgroundColor: c.color, opacity: c.is_open ? 1 : 0.55 }}
-                      aria-hidden="true"
-                    >
-                      {animalEmoji(c.animal_icon)}
-                      {!c.is_open ? (
-                        <span className="absolute right-3 top-3 rounded-full bg-black/30 px-2 py-1 text-lg">🔒</span>
-                      ) : null}
-                    </span>
-                    <span className="flex flex-1 flex-col gap-2 p-4">
-                      <span className="font-heading text-3xl font-black text-ink-900">{c.name}</span>
-                      {c.is_open ? (
-                        <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-800 sm:text-sm">
-                          <span className="h-2 w-2 animate-pulse rounded-full bg-brand-500" aria-hidden="true" />
-                          {mn.public.openNow}
-                        </span>
-                      ) : (
-                        <span className="text-sm font-semibold text-ink-700 first-letter:uppercase">{mn.public.lockedShort}</span>
-                      )}
-                      <span className="mt-auto pt-1 font-heading text-base font-bold text-brand-700 group-hover:underline">
-                        {mn.public.enter} <span aria-hidden="true">→</span>
+                    <span className="flex items-center gap-3">
+                      <span
+                        className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border-[3px] border-ink-900 text-4xl sm:h-20 sm:w-20 sm:text-5xl"
+                        style={{ backgroundColor: c.color, opacity: c.is_open ? 1 : 0.6 }}
+                        aria-hidden="true"
+                      >
+                        <ClassLogo icon={c.animal_icon} />
                       </span>
+                      <span className="font-heading text-2xl font-bold text-ink-900 sm:text-3xl">{c.name}</span>
+                    </span>
+                    {c.is_open ? (
+                      <span className="inline-flex w-fit items-center gap-1.5 rounded-lg border-2 border-ink-900 bg-mint-200 px-2.5 py-1 text-xs font-extrabold text-ink-900 sm:text-sm">
+                        <span className="h-2.5 w-2.5 animate-pulse rounded-full border border-ink-900 bg-mint-500" aria-hidden="true" />
+                        {mn.public.openNow}
+                      </span>
+                    ) : (
+                      <span className="inline-flex w-fit items-center gap-1.5 rounded-lg border-2 border-ink-200 bg-ink-50 px-2.5 py-1 text-xs font-bold text-slate-600 sm:text-sm">
+                        <span aria-hidden="true">🔒</span>
+                        <span className="first-letter:uppercase">{mn.public.lockedShort}</span>
+                      </span>
+                    )}
+                    <span className="mt-auto flex items-center justify-between border-t-2 border-dashed border-ink-200 pt-3 font-extrabold text-brand-600">
+                      <span className="group-hover:underline">{mn.public.enter}</span>
+                      <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
                     </span>
                   </Link>
                 ))}

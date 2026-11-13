@@ -104,10 +104,10 @@ export function ImportStudents({ classes, initialClassId }: { classes: { id: str
                 void upload(e.target.files?.[0]);
                 e.target.value = '';
               }}
-              className="block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:font-semibold file:text-slate-800 hover:file:bg-slate-200"
+              className="block w-full text-sm file:mr-3 file:cursor-pointer file:rounded-xl file:border-2 file:border-ink-900 file:bg-white file:px-4 file:py-2 file:font-extrabold file:text-ink-900 file:shadow-brut-sm hover:file:bg-sun-100"
             />
           </Field>
-          <a href="/api/import/template" className="inline-block text-sm font-semibold text-brand-700 hover:underline">
+          <a href="/api/import/template" className="inline-block text-sm font-extrabold text-brand-600 hover:underline">
             ⬇ {mn.importPage.template}
           </a>
           {uploading ? <p className="text-sm text-slate-600">{mn.common.loading}</p> : null}
@@ -127,7 +127,7 @@ export function ImportStudents({ classes, initialClassId }: { classes: { id: str
       {rows.length > 0 ? (
         <div>
           <h2 className="mb-2 text-base font-bold">{fill(mn.importPage.previewTitle, { n: rows.length })}</h2>
-          <div className="max-h-96 overflow-auto rounded-lg border border-slate-200">
+          <div className="max-h-96 overflow-auto rounded-xl border-2 border-ink-900">
             <table className={tableClass}>
               <thead>
                 <tr>
@@ -151,7 +151,7 @@ export function ImportStudents({ classes, initialClassId }: { classes: { id: str
                       <button
                         type="button"
                         onClick={() => setRows(rows.filter((_, j) => j !== i))}
-                        className="rounded px-2 py-1 text-slate-500 hover:bg-slate-100"
+                        className="rounded-lg border-2 border-transparent px-2 py-1 text-slate-500 hover:border-ink-900 hover:bg-red-50 hover:text-red-700"
                         aria-label={mn.common.delete}
                       >
                         ✕

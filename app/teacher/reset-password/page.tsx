@@ -21,7 +21,7 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
   const errors = mn.teacherAuth.errors as Record<string, string>;
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-black">{mn.teacherAuth.resetTitle}</h1>
+      <h1 className="text-2xl font-extrabold">{mn.teacherAuth.resetTitle}</h1>
       {error ? <Alert tone="error">{errors[error] ?? mn.errors.generic}</Alert> : null}
       <form action={updatePassword} className="space-y-4">
         <Field label={mn.teacherAuth.newPassword} hint={mn.teacherAuth.passwordHint}>

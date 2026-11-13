@@ -1,25 +1,22 @@
+import { SUPABASE_URL } from './supabase/env';
 import type { AttendanceStatus, ComponentSource } from './types';
 
-// Class mascots. Keys are stored in classes.animal_icon; labels live in locales/mn.ts.
-// Emoji for now: they need no image files and can be swapped for drawings later.
-export const ANIMALS: Record<string, string> = {
-  camel_calf: '🐫',
-  foal: '🐴',
-  lamb: '🐑',
-  kid: '🐐',
-  calf: '🐮',
-  puppy: '🐶',
-  marmot: '🦫',
-  eagle: '🦅',
-  deer: '🦌',
-  rabbit: '🐰',
-  fox: '🦊',
-  swan: '🦢',
-};
-export const ANIMAL_KEYS = Object.keys(ANIMALS);
+// Sections are numbered: grade 1, section 2 is the class '1-2'.
+export const CLASS_SECTIONS = Array.from({ length: 12 }, (_, i) => String(i + 1));
 
-export function animalEmoji(key: string | null | undefined): string {
-  return ANIMALS[key ?? ''] ?? ANIMALS.foal;
+// Class logos: a picture the teacher uploads to Supabase Storage, files at
+// '<class id>/<name>'. Its public URL is kept in classes.animal_icon (the column
+// kept its old name); any other value there, such as an old animal key, means no logo.
+export const LOGO_BUCKET = 'class-logos';
+export const LOGO_TYPES: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif' };
+export const LOGO_MAX_BYTES = 2 * 1024 * 1024;
+// the browser shrinks a picture to this many pixels on its longer side before sending it
+export const LOGO_PIXELS = 256;
+const LOGO_URL_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/${LOGO_BUCKET}/`;
+
+/** True when animal_icon holds a logo uploaded to this project. */
+export function isLogoUrl(value: string | null | undefined): value is string {
+  return Boolean(SUPABASE_URL) && typeof value === 'string' && value.startsWith(LOGO_URL_PREFIX);
 }
 
 export const CLASS_COLORS = [
@@ -50,11 +47,11 @@ export function pictureLength(grade: number): number {
 export const ATTENDANCE_STATUSES: AttendanceStatus[] = ['present', 'late', 'absent', 'excused', 'sick'];
 
 export const ATTENDANCE_STYLE: Record<AttendanceStatus, { icon: string; active: string; cell: string }> = {
-  present: { icon: '✓', active: 'bg-emerald-600 text-white border-emerald-600', cell: 'bg-emerald-100 text-emerald-800' },
-  late: { icon: '⏰', active: 'bg-amber-500 text-white border-amber-500', cell: 'bg-amber-100 text-amber-800' },
-  absent: { icon: '✗', active: 'bg-red-600 text-white border-red-600', cell: 'bg-red-100 text-red-800' },
-  excused: { icon: '📝', active: 'bg-sky-600 text-white border-sky-600', cell: 'bg-sky-100 text-sky-800' },
-  sick: { icon: '🤒', active: 'bg-violet-600 text-white border-violet-600', cell: 'bg-violet-100 text-violet-800' },
+  present: { icon: '✓', active: 'bg-emerald-500 text-white border-ink-900 shadow-brut-sm', cell: 'bg-emerald-100 text-emerald-900' },
+  late: { icon: '⏰', active: 'bg-sun-500 text-ink-900 border-ink-900 shadow-brut-sm', cell: 'bg-amber-100 text-amber-900' },
+  absent: { icon: '✗', active: 'bg-red-500 text-white border-ink-900 shadow-brut-sm', cell: 'bg-red-100 text-red-900' },
+  excused: { icon: '📝', active: 'bg-sky-500 text-white border-ink-900 shadow-brut-sm', cell: 'bg-sky-100 text-sky-900' },
+  sick: { icon: '🤒', active: 'bg-grape-500 text-white border-ink-900 shadow-brut-sm', cell: 'bg-violet-100 text-violet-900' },
 };
 
 export const COMPONENT_SOURCES: ComponentSource[] = ['attendance', 'quiz', 'scratch', 'practice', 'lesson', 'manual'];

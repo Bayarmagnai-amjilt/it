@@ -11,7 +11,7 @@ export interface SchoolYear {
   ends_on: string;
 }
 
-/** The teacher's classes of the current school year: 1А, 1Б, 2А ... */
+/** The teacher's classes of the current school year: 1-1, 1-2, 2-1 ... */
 export async function loadClasses(supabase: Supabase, includeArchived = false): Promise<TeacherClass[]> {
   const { data } = await supabase.rpc('my_classes', { p_include_archived: includeArchived });
   const list = (data ?? []) as TeacherClass[];
