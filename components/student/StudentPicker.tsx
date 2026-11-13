@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { useMemo, useState, useTransition } from 'react';
+import { ClassLogo } from '@/components/ClassLogo';
 import { studentLogin } from '@/features/auth/actions';
-import { animalEmoji, PICTURE_TILES, pictureLength } from '@/lib/constants';
+import { PICTURE_TILES, pictureLength } from '@/lib/constants';
 import { fill } from '@/lib/errors';
 import { displayName, firstLetter } from '@/lib/mn/names';
 import type { LoginClass, LoginStudent, StudentLoginError } from '@/lib/types';
@@ -119,20 +120,20 @@ export function StudentPicker({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link
           href="/"
-          className="flex min-h-16 items-center gap-2 rounded-full border-2 border-ink-900 bg-white px-6 font-heading text-xl font-bold text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
+          className="press flex min-h-16 items-center gap-2 rounded-2xl border-[3px] border-ink-900 bg-white px-6 font-heading text-xl font-bold text-ink-900 shadow-brut-sm hover:bg-sun-100"
         >
           <span aria-hidden="true">←</span> {mn.public.backToClasses}
         </Link>
         <div
-          className="flex items-center gap-3 rounded-full px-6 py-3 font-heading text-3xl font-black text-white shadow"
+          className="flex items-center gap-3 rounded-2xl border-[3px] border-ink-900 px-6 py-3 font-heading text-3xl font-bold text-white shadow-brut [text-shadow:0_2px_0_rgb(0_0_0/0.25)]"
           style={{ backgroundColor: cls.color }}
         >
-          <span aria-hidden="true">{animalEmoji(cls.animal_icon)}</span>
+          <ClassLogo icon={cls.animal_icon} />
           {cls.name}
         </div>
       </div>
 
-      <h1 className="text-center text-4xl font-black text-ink-900 sm:text-5xl">{mn.public.pickName}</h1>
+      <h1 className="text-center text-3xl font-extrabold text-ink-900 sm:text-5xl">{mn.public.pickName}</h1>
 
       {letters.length > 1 ? (
         <div className="flex flex-wrap justify-center gap-2" role="group" aria-label={mn.public.letterFilter}>
@@ -140,8 +141,8 @@ export function StudentPicker({
             type="button"
             onClick={() => setLetter(null)}
             aria-pressed={letter === null}
-            className={`min-h-16 min-w-16 rounded-2xl px-4 text-xl font-extrabold shadow ${
-              letter === null ? 'bg-brand-500 text-white' : 'bg-white text-ink-800 hover:bg-brand-50'
+            className={`press min-h-16 min-w-16 rounded-2xl border-[3px] border-ink-900 px-4 text-xl font-extrabold shadow-brut-sm ${
+              letter === null ? 'bg-sun-400 text-ink-900' : 'bg-white text-ink-900 hover:bg-sun-100'
             }`}
           >
             {mn.common.all}
@@ -152,8 +153,8 @@ export function StudentPicker({
               type="button"
               onClick={() => setLetter(l === letter ? null : l)}
               aria-pressed={letter === l}
-              className={`min-h-16 min-w-16 rounded-2xl text-2xl font-extrabold shadow ${
-                letter === l ? 'bg-brand-500 text-white' : 'bg-white text-ink-800 hover:bg-brand-50'
+              className={`press min-h-16 min-w-16 rounded-2xl border-[3px] border-ink-900 text-2xl font-extrabold shadow-brut-sm ${
+                letter === l ? 'bg-sun-400 text-ink-900' : 'bg-white text-ink-900 hover:bg-sun-100'
               }`}
             >
               {l}
@@ -163,7 +164,7 @@ export function StudentPicker({
       ) : null}
 
       {students.length === 0 ? (
-        <p className="text-center text-xl text-slate-600">{mn.public.noStudents}</p>
+        <p className="text-center text-xl font-semibold text-slate-600">{mn.public.noStudents}</p>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {visible.map((s, i) => (
@@ -175,25 +176,25 @@ export function StudentPicker({
                 setError(null);
                 setStep('confirm');
               }}
-              className="card-in flex min-h-24 items-center gap-3 rounded-2xl border-2 border-ink-100 bg-white p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-500 hover:shadow-lg focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-400"
+              className="card-in lift flex min-h-24 items-center gap-3 rounded-2xl border-[3px] border-ink-900 bg-white p-4 text-left shadow-brut focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-300"
               style={{ animationDelay: `${Math.min(i, 30) * 45}ms` }}
             >
               <span
-                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-3xl font-extrabold text-white"
+                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-[3px] border-ink-900 font-heading text-2xl font-bold text-white [text-shadow:0_2px_0_rgb(0_0_0/0.2)]"
                 style={{ backgroundColor: AVATAR_COLORS[i % AVATAR_COLORS.length] }}
                 aria-hidden="true"
               >
                 {firstLetter(s.first_name)}
               </span>
-              <span className="text-2xl font-bold leading-tight text-ink-900">{displayName(s)}</span>
+              <span className="text-2xl font-extrabold leading-tight text-ink-900">{displayName(s)}</span>
             </button>
           ))}
         </div>
       )}
 
       {step === 'confirm' && selected ? (
-        <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true">
-          <div className="w-full max-w-lg rounded-3xl bg-white p-8 text-center shadow-2xl">
+        <div className="fixed inset-0 z-20 flex items-center justify-center bg-ink-950/60 p-4" role="dialog" aria-modal="true">
+          <div className="w-full max-w-lg rounded-3xl border-[3px] border-ink-900 bg-white p-8 text-center shadow-brut-lg">
             <div className="bob text-7xl" aria-hidden="true">👋</div>
             <p className="mt-4 text-3xl font-extrabold text-ink-900">
               {fill(mn.public.confirmName, { name: displayName(selected) })}
@@ -204,7 +205,7 @@ export function StudentPicker({
                 type="button"
                 disabled={pending}
                 onClick={confirmYes}
-                className="min-h-20 rounded-3xl bg-brand-500 text-3xl font-extrabold text-white hover:bg-brand-600 disabled:opacity-60"
+                className="press min-h-20 rounded-2xl border-[3px] border-ink-900 bg-brand-500 text-3xl font-extrabold text-white shadow-brut hover:bg-brand-600 disabled:opacity-60"
               >
                 <span aria-hidden="true">✓ </span>
                 {pending ? mn.common.loading : mn.common.yes}
@@ -213,7 +214,7 @@ export function StudentPicker({
                 type="button"
                 disabled={pending}
                 onClick={reset}
-                className="min-h-20 rounded-3xl bg-ink-100 text-3xl font-extrabold text-ink-900 hover:bg-ink-100/70 disabled:opacity-60"
+                className="press min-h-20 rounded-2xl border-[3px] border-ink-900 bg-white text-3xl font-extrabold text-ink-900 shadow-brut hover:bg-blush-100 disabled:opacity-60"
               >
                 <span aria-hidden="true">✗ </span>
                 {mn.common.no}
@@ -224,8 +225,8 @@ export function StudentPicker({
       ) : null}
 
       {step === 'picture' && selected ? (
-        <div className="fixed inset-0 z-20 flex items-center justify-center overflow-y-auto bg-black/50 p-4" role="dialog" aria-modal="true">
-          <div className={`w-full max-w-xl rounded-3xl bg-white p-6 text-center shadow-2xl ${shake ? 'shake' : ''}`}>
+        <div className="fixed inset-0 z-20 flex items-center justify-center overflow-y-auto bg-ink-950/60 p-4" role="dialog" aria-modal="true">
+          <div className={`w-full max-w-xl rounded-3xl border-[3px] border-ink-900 bg-white p-6 text-center shadow-brut-lg ${shake ? 'shake' : ''}`}>
             <p className="text-2xl font-extrabold text-ink-900">{displayName(selected)}</p>
             <p className="mt-1 text-xl font-bold text-slate-600">
               {setup ? fill(mn.public.choosePictures, { n: needed }) : fill(mn.public.enterPictures, { n: needed })}
@@ -237,8 +238,8 @@ export function StudentPicker({
                 return (
                   <span
                     key={i}
-                    className={`flex h-16 w-16 items-center justify-center rounded-2xl border-4 text-4xl ${
-                      tile ? 'border-brand-400 bg-brand-50' : 'border-dashed border-slate-300 bg-slate-50'
+                    className={`flex h-16 w-16 items-center justify-center rounded-2xl border-[3px] text-4xl ${
+                      tile ? 'border-ink-900 bg-sun-100 shadow-brut-sm' : 'border-dashed border-ink-300 bg-ink-50'
                     }`}
                   >
                     {/* while entering, taps are shown as dots so a neighbour cannot read them */}
@@ -257,10 +258,10 @@ export function StudentPicker({
                   type="button"
                   disabled={pending}
                   onClick={() => tapPicture(t.id)}
-                  className="flex min-h-24 flex-col items-center justify-center rounded-3xl bg-brand-50 p-2 shadow-sm hover:bg-brand-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-400 disabled:opacity-60"
+                  className="press flex min-h-24 flex-col items-center justify-center rounded-2xl border-[3px] border-ink-900 bg-brand-50 p-2 shadow-brut-sm hover:bg-brand-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-300 disabled:opacity-60"
                 >
                   <span className="text-5xl" aria-hidden="true">{t.emoji}</span>
-                  <span className="mt-1 text-xl font-bold text-ink-800">{mn.pictures[t.id]}</span>
+                  <span className="mt-1 text-xl font-extrabold text-ink-900">{mn.pictures[t.id]}</span>
                 </button>
               ))}
             </div>
@@ -270,7 +271,7 @@ export function StudentPicker({
                 type="button"
                 disabled={pending}
                 onClick={reset}
-                className="min-h-16 rounded-2xl bg-ink-100 text-xl font-extrabold text-ink-900 hover:bg-ink-100/70"
+                className="press min-h-16 rounded-2xl border-[3px] border-ink-900 bg-white text-xl font-extrabold text-ink-900 shadow-brut-sm hover:bg-ink-50"
               >
                 {mn.common.back}
               </button>
@@ -278,7 +279,7 @@ export function StudentPicker({
                 type="button"
                 disabled={pending || pictures.length === 0}
                 onClick={() => setPictures([])}
-                className="min-h-16 rounded-2xl bg-ink-100 text-xl font-extrabold text-ink-900 hover:bg-ink-100/70 disabled:opacity-50"
+                className="press min-h-16 rounded-2xl border-[3px] border-ink-900 bg-white text-xl font-extrabold text-ink-900 shadow-brut-sm hover:bg-ink-50 disabled:opacity-50"
               >
                 {mn.public.clearPictures}
               </button>
@@ -287,7 +288,7 @@ export function StudentPicker({
                   type="button"
                   disabled={pending || pictures.length !== needed}
                   onClick={() => submit(selected, pictures)}
-                  className="min-h-16 rounded-2xl bg-brand-500 text-xl font-extrabold text-white hover:bg-brand-600 disabled:opacity-50"
+                  className="press min-h-16 rounded-2xl border-[3px] border-ink-900 bg-brand-500 text-xl font-extrabold text-white shadow-brut-sm hover:bg-brand-600 disabled:opacity-50"
                 >
                   {pending ? mn.common.loading : mn.public.picturesDone}
                 </button>

@@ -2,14 +2,19 @@ import Link from 'next/link';
 import { cn } from '@/components/ui';
 import { mn } from '@/locales/mn';
 
-/** Square mark: a teal tile with "</>" — a plain sign for "code", not anyone's logo. */
+/** Square mark: a blue tile with "</>" — a plain sign for "code", not anyone's logo. */
 export function BrandMark({ size = 'md', className }: { size?: 'sm' | 'md' | 'lg' | 'xl'; className?: string }) {
-  const box = { sm: 'h-8 w-8 text-sm', md: 'h-10 w-10 text-base', lg: 'h-16 w-16 text-2xl', xl: 'h-24 w-24 text-4xl' }[size];
+  const box = {
+    sm: 'h-8 w-8 rounded-lg text-xs shadow-brut-sm',
+    md: 'h-10 w-10 rounded-xl text-sm shadow-brut-sm',
+    lg: 'h-16 w-16 rounded-2xl text-xl shadow-brut',
+    xl: 'h-24 w-24 rounded-3xl text-3xl shadow-brut-lg',
+  }[size];
   return (
     <span
       aria-hidden="true"
       className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded-xl bg-brand-500 font-heading font-black text-white shadow-[inset_0_-4px_0_rgb(0_0_0/0.15)]',
+        'inline-flex shrink-0 items-center justify-center border-2 border-ink-900 bg-brand-500 font-heading font-bold text-white',
         box,
         className,
       )}
@@ -22,10 +27,10 @@ export function BrandMark({ size = 'md', className }: { size?: 'sm' | 'md' | 'lg
 /** Mark + school name. `inverse` for dark bars. */
 export function Brand({ href = '/', inverse = false, compact = false }: { href?: string; inverse?: boolean; compact?: boolean }) {
   return (
-    <Link href={href} className="flex items-center gap-3 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">
+    <Link href={href} className="flex min-w-0 items-center gap-3 rounded-xl focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-200">
       <BrandMark size="md" />
       <span className="leading-tight">
-        <span className={cn('block font-heading text-lg font-extrabold', inverse ? 'text-white' : 'text-ink-900')}>
+        <span className={cn('block font-heading text-base font-bold sm:text-lg', inverse ? 'text-white' : 'text-ink-900')}>
           {compact ? (
             mn.app.short
           ) : (
@@ -36,7 +41,7 @@ export function Brand({ href = '/', inverse = false, compact = false }: { href?:
           )}
         </span>
         {!compact ? (
-          <span className={cn('hidden text-xs font-semibold sm:block', inverse ? 'text-brand-200' : 'text-brand-700')}>
+          <span className={cn('hidden font-mono text-[11px] font-bold sm:block', inverse ? 'text-brand-200' : 'text-slate-500')}>
             {mn.footer.forStudents} · {mn.footer.forTeachers}
           </span>
         ) : null}
@@ -49,17 +54,17 @@ export function Brand({ href = '/', inverse = false, compact = false }: { href?:
 export function SiteFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="no-print bg-ink-950 text-ink-100">
+    <footer className="no-print border-t-[3px] border-ink-900 bg-ink-900 text-ink-100">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
           <div className="flex items-center gap-3">
             <BrandMark size="md" />
-            <span className="font-heading text-lg font-extrabold text-white">{mn.app.name}</span>
+            <span className="font-heading text-lg font-bold text-white">{mn.app.name}</span>
           </div>
           <p className="mt-3 max-w-sm text-sm text-ink-100/80">{mn.footer.about}</p>
         </div>
         <div>
-          <h2 className="text-sm font-bold uppercase tracking-wider text-brand-300">{mn.footer.forStudents}</h2>
+          <h2 className="font-mono text-xs font-bold uppercase tracking-widest text-sun-400">{mn.footer.forStudents}</h2>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
               <Link href="/" className="hover:text-white hover:underline">
@@ -69,7 +74,7 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <h2 className="text-sm font-bold uppercase tracking-wider text-brand-300">{mn.footer.forTeachers}</h2>
+          <h2 className="font-mono text-xs font-bold uppercase tracking-widest text-sun-400">{mn.footer.forTeachers}</h2>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
               <Link href="/teacher/login" className="hover:text-white hover:underline">

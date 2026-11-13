@@ -2,43 +2,86 @@
 
 @theme inline {
   /* Fonts are loaded in app/layout.tsx with the cyrillic-ext subset (Ө, Ү live there).
-     Headings: Montserrat (bold, geometric). Body text: Noto Sans. */
+     Headings: Unbounded (wide, bold). Body text: Nunito. Numbers and codes: JetBrains Mono. */
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-heading-face), var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-display), var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-code), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-/* Design tokens: bright teal as the main colour, charcoal for bars and text,
-   purple and orange as accents. */
+/* Design tokens of the playful "sticker" look: lavender dotted page, thick navy
+   outlines, hard offset shadows, bright blue as the main colour, yellow for the
+   big call-to-action, pastel fills for cards. */
 @theme {
-  --color-brand-50: #e6f8fa;
-  --color-brand-100: #c2eff3;
-  --color-brand-200: #8fe2ea;
-  --color-brand-300: #52d1dd;
-  --color-brand-400: #1fc0cf;
-  --color-brand-500: #00adbc;
-  --color-brand-600: #0095a3;
-  --color-brand-700: #007a86;
-  --color-brand-800: #00616b;
-  --color-brand-900: #014b53;
+  --color-brand-50: #eef1ff;
+  --color-brand-100: #dfe4ff;
+  --color-brand-200: #c3cbff;
+  --color-brand-300: #9ba8ff;
+  --color-brand-400: #6b7cfb;
+  --color-brand-500: #4458f2;
+  --color-brand-600: #3343d8;
+  --color-brand-700: #2b36ae;
+  --color-brand-800: #262e88;
+  --color-brand-900: #22286b;
 
-  --color-ink-50: #f5f6f8;
-  --color-ink-100: #e7e9ed;
-  --color-ink-700: #3e4651;
-  --color-ink-800: #333a42;
-  --color-ink-900: #292f36;
-  --color-ink-950: #1d2126;
+  /* navy-purple: outlines, shadows, text and the dark banners */
+  --color-ink-50: #f3f2fb;
+  --color-ink-100: #e5e3f4;
+  --color-ink-200: #d0cde6;
+  --color-ink-300: #aeaacd;
+  --color-ink-700: #45416b;
+  --color-ink-800: #2f2b53;
+  --color-ink-900: #1f1c3d;
+  --color-ink-950: #16142d;
 
-  --color-grape-100: #efe5f7;
-  --color-grape-500: #8c52ba;
-  --color-grape-600: #7442a0;
-  --color-grape-900: #3b1f57;
+  /* Muted text and thin dividers use "slate" across the app; tint it toward the navy. */
+  --color-slate-50: #f7f6fc;
+  --color-slate-100: #eeedf7;
+  --color-slate-200: #dedcee;
+  --color-slate-300: #c6c3dc;
+  --color-slate-400: #9e9bbb;
+  --color-slate-500: #78749b;
+  --color-slate-600: #5f5b83;
+  --color-slate-700: #49456d;
+  --color-slate-800: #343059;
+  --color-slate-900: #1f1c3d;
 
-  --color-sun-100: #fff1d6;
-  --color-sun-400: #ffb733;
-  --color-sun-500: #ffa400;
+  --color-grape-100: #ece6fd;
+  --color-grape-500: #8b5cf6;
+  --color-grape-600: #7442e0;
+  --color-grape-900: #3b1f73;
+
+  --color-sun-50: #fff9e8;
+  --color-sun-100: #fff1c9;
+  --color-sun-200: #ffe594;
+  --color-sun-400: #ffcf3f;
+  --color-sun-500: #fbbf24;
+  --color-sun-600: #e0a30b;
+
+  --color-mint-100: #d7f6ec;
+  --color-mint-200: #b3eedb;
+  --color-mint-500: #22c493;
+
+  --color-blush-100: #ffe3ec;
+  --color-blush-200: #ffc6d8;
+  --color-blush-400: #ff6b9a;
+
+  --color-tangerine-100: #ffe6d5;
+  --color-tangerine-500: #fb6a1f;
+
+  --shadow-brut-sm: 2px 2px 0 0 var(--color-ink-900);
+  --shadow-brut: 4px 4px 0 0 var(--color-ink-900);
+  --shadow-brut-lg: 6px 6px 0 0 var(--color-ink-900);
+  --shadow-brut-blush: 6px 6px 0 0 var(--color-blush-400);
+  --shadow-brut-sun: 6px 6px 0 0 var(--color-sun-500);
 }
 
 @layer base {
+  body {
+    background-color: var(--color-ink-50);
+    background-image: radial-gradient(var(--color-ink-200) 1.1px, transparent 1.3px);
+    background-size: 22px 22px;
+  }
+
   h1,
   h2,
   h3 {
@@ -53,6 +96,39 @@
   label:has(input[type='checkbox']),
   label:has(input[type='radio']) {
     cursor: pointer;
+  }
+
+  input[type='checkbox'],
+  input[type='radio'] {
+    accent-color: var(--color-brand-500);
+  }
+}
+
+/* A card that rises a little toward the pointer: the shadow grows as it lifts. */
+@utility lift {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  &:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 0 var(--color-ink-900);
+  }
+  &:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-ink-900);
+  }
+}
+
+/* A button that sinks into its shadow when pressed. */
+@utility press {
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+  &:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-ink-900);
   }
 }
 
@@ -112,15 +188,14 @@
   .no-print {
     display: none !important;
   }
+  body {
+    background: white;
+  }
 }
 
-/* Decorative pattern of rounded blocks on the dark hero bands. */
+/* Dark navy banner with a faint dot grid (hero blocks, login side panel). */
 .hero-pattern {
   background-color: var(--color-ink-900);
-  background-image:
-    radial-gradient(circle at 12% 20%, rgb(0 173 188 / 0.35) 0, transparent 28%),
-    radial-gradient(circle at 88% 80%, rgb(140 82 186 / 0.35) 0, transparent 30%),
-    linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
-  background-size: auto, auto, 32px 32px, 32px 32px;
+  background-image: radial-gradient(rgb(255 255 255 / 0.09) 1.1px, transparent 1.3px);
+  background-size: 22px 22px;
 }

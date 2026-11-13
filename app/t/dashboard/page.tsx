@@ -4,7 +4,6 @@ import { Flash } from '@/components/teacher/Flash';
 import { LessonButtons } from '@/components/teacher/LessonButtons';
 import { Alert, Badge, buttonClass, Card, ClassChip, EmptyState, PageHeader } from '@/components/ui';
 import { requireTeacher } from '@/lib/auth/teacher';
-import { animalEmoji } from '@/lib/constants';
 import { fill } from '@/lib/errors';
 import { formatDate, formatPercent, formatTime, isoWeekday } from '@/lib/mn/dates';
 import type { SearchParams } from '@/lib/params';
@@ -14,13 +13,28 @@ import { mn } from '@/locales/mn';
 
 export const metadata: Metadata = { title: mn.nav.dashboard };
 
-function Kpi({ label, value, note, tone }: { label: string; value: string; note?: string; tone?: 'up' | 'down' }) {
+// Pastel fills for the four number cards, in the order they appear.
+const KPI_FILL = ['bg-brand-50', 'bg-mint-100', 'bg-sun-100', 'bg-blush-100'] as const;
+
+function Kpi({
+  label,
+  value,
+  note,
+  tone,
+  bg,
+}: {
+  label: string;
+  value: string;
+  note?: string;
+  tone?: 'up' | 'down';
+  bg: (typeof KPI_FILL)[number];
+}) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <p className="text-sm font-semibold text-slate-600">{label}</p>
-      <p className="mt-1 text-3xl font-extrabold text-slate-900">{value}</p>
+    <div className={`rounded-2xl border-[3px] border-ink-900 p-5 shadow-brut ${bg}`}>
+      <p className="text-sm font-bold text-slate-700">{label}</p>
+      <p className="mt-2 font-heading text-3xl font-bold text-ink-900">{value}</p>
       {note ? (
-        <p className={`mt-1 text-sm font-semibold ${tone === 'up' ? 'text-emerald-700' : tone === 'down' ? 'text-red-700' : 'text-slate-500'}`}>
+        <p className={`mt-1 font-mono text-xs font-bold ${tone === 'up' ? 'text-emerald-700' : tone === 'down' ? 'text-red-700' : 'text-slate-600'}`}>
           {note}
         </p>
       ) : null}
@@ -74,15 +88,26 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Kpi label={mn.dashboard.kpiStudents} value={String(s?.students ?? 0)} note={fill(mn.dashboard.kpiClasses, { n: s?.classes ?? 0 })} />
-        <Kpi label={mn.dashboard.kpiToday} value={pct(s?.today_attendance)} note={s?.today_attendance === null ? mn.dashboard.notTakenYet : undefined} />
+        <Kpi
+          label={mn.dashboard.kpiStudents}
+          value={String(s?.students ?? 0)}
+          note={fill(mn.dashboard.kpiClasses, { n: s?.classes ?? 0 })}
+          bg={KPI_FILL[0]}
+        />
+        <Kpi
+          label={mn.dashboard.kpiToday}
+          value={pct(s?.today_attendance)}
+          note={s?.today_attendance === null ? mn.dashboard.notTakenYet : undefined}
+          bg={KPI_FILL[1]}
+        />
         <Kpi
           label={mn.dashboard.kpiWeek}
           value={pct(s?.week_attendance)}
           note={delta === null ? undefined : `${delta >= 0 ? '↑' : '↓'} ${Math.abs(delta)} ${mn.dashboard.vsLastWeek}`}
           tone={delta === null ? undefined : delta >= 0 ? 'up' : 'down'}
+          bg={KPI_FILL[2]}
         />
-        <Kpi label={mn.dashboard.kpiOnline} value={String(s?.online ?? 0)} />
+        <Kpi label={mn.dashboard.kpiOnline} value={String(s?.online ?? 0)} bg={KPI_FILL[3]} />
       </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
@@ -90,14 +115,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
           {!s || s.schedule.length === 0 ? (
             <p className="text-sm text-slate-600">{mn.dashboard.noLessonsToday}</p>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y-2 divide-dashed divide-ink-100">
               {s.schedule.map((row) => (
                 <li key={`${row.class_id}-${row.starts_at}`} className="flex flex-wrap items-center justify-between gap-3 py-3">
                   <div className="flex items-center gap-3">
-                    <span className="w-24 text-sm font-semibold tabular-nums text-slate-600">
+                    <span className="w-24 font-mono text-sm font-bold tabular-nums text-slate-600">
                       {formatTime(row.starts_at)}–{formatTime(row.ends_at)}
                     </span>
-                    <ClassChip name={row.name} color={row.color} emoji={animalEmoji(row.animal_icon)} />
+                    <ClassChip name={row.name} color={row.color} icon={row.animal_icon} />
                     {row.open_lesson_id ? <Badge tone="success">{mn.lesson.open}</Badge> : null}
                     {row.attendance_done ? <Badge tone="info">{mn.dashboard.attendanceDone}</Badge> : null}
                   </div>
@@ -127,12 +152,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
               }
             />
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y-2 divide-dashed divide-ink-100">
               {classes.map((c) => (
                 <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
                   <div className="flex items-center gap-3">
                     <Link href={`/t/classes/${c.id}`}>
-                      <ClassChip name={c.name} color={c.color} emoji={animalEmoji(c.animal_icon)} />
+                      <ClassChip name={c.name} color={c.color} icon={c.animal_icon} />
                     </Link>
                     <span className="text-sm text-slate-600">{fill(mn.classes.studentCount, { n: c.student_count })}</span>
                     {c.open_lesson_id ? <Badge tone="success">{mn.lesson.open}</Badge> : null}

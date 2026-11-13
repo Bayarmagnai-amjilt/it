@@ -73,7 +73,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Sea
             <p className="mb-3 text-sm text-slate-600">{mn.settings.termsHint}</p>
             <div className="space-y-3">
               {terms.map((t) => (
-                <div key={t.id} className="flex flex-wrap items-end gap-3 border-b border-slate-100 pb-3">
+                <div key={t.id} className="flex flex-wrap items-end gap-3 border-b-2 border-dashed border-ink-100 pb-3">
                   <form action={saveTerm} className="grid flex-1 gap-3 sm:grid-cols-[1fr_11rem_11rem_5rem_auto] sm:items-end">
                     <input type="hidden" name="id" value={t.id} />
                     <Field label={mn.settings.termName}>

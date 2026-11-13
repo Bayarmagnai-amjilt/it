@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AutoRefresh } from '@/components/AutoRefresh';
+import { ClassLogo } from '@/components/ClassLogo';
 import { StudentPicker } from '@/components/student/StudentPicker';
-import { animalEmoji, isUuid } from '@/lib/constants';
+import { isUuid } from '@/lib/constants';
 import { letterIndex, sortByName } from '@/lib/mn/names';
 import { param, type SearchParams } from '@/lib/params';
 import { createAdminClient } from '@/lib/supabase/admin';
@@ -33,22 +34,22 @@ export default async function ClassLoginPage({
     // Lesson not started: no names are sent to the browser at all.
     return (
       <div className="px-4 py-10">
-      <div className="mx-auto max-w-xl rounded-3xl border border-ink-100 bg-white p-10 text-center shadow-lg">
+      <div className="mx-auto max-w-xl rounded-3xl border-[3px] border-ink-900 bg-white p-10 text-center shadow-brut-lg">
         <AutoRefresh seconds={10} />
         <div
-          className="mx-auto flex h-28 w-28 items-center justify-center rounded-full text-6xl"
+          className="mx-auto flex h-28 w-28 items-center justify-center rounded-3xl border-[3px] border-ink-900 text-6xl shadow-brut"
           style={{ backgroundColor: roster.class.color }}
           aria-hidden="true"
         >
-          {animalEmoji(roster.class.animal_icon)}
+          <ClassLogo icon={roster.class.animal_icon} />
         </div>
-        <p className="mt-4 text-3xl font-black text-ink-900">{roster.class.name}</p>
+        <p className="mt-4 font-heading text-3xl font-bold text-ink-900">{roster.class.name}</p>
         <p className="mt-6 text-5xl" aria-hidden="true">💤</p>
-        <h1 className="mt-2 text-3xl font-black text-ink-900">{mn.public.lockedTitle}</h1>
-        <p className="mt-2 text-xl text-slate-600">{mn.public.lockedHint}</p>
+        <h1 className="mt-2 text-2xl font-extrabold text-ink-900 sm:text-3xl">{mn.public.lockedTitle}</h1>
+        <p className="mt-2 text-xl font-semibold text-slate-600">{mn.public.lockedHint}</p>
         <Link
           href="/"
-          className="mt-8 inline-flex min-h-16 items-center rounded-full border-2 border-ink-900 px-8 font-heading text-xl font-bold text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
+          className="press mt-8 inline-flex min-h-16 items-center rounded-2xl border-[3px] border-ink-900 bg-white px-8 font-heading text-xl font-bold text-ink-900 shadow-brut-sm hover:bg-sun-100"
         >
           <span aria-hidden="true">← </span>
           {mn.public.backToClasses}

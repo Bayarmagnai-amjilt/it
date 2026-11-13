@@ -1,19 +1,17 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Brand, SiteFooter } from '@/components/Brand';
+import { buttonClass } from '@/components/ui';
 import { mn } from '@/locales/mn';
 
-// Student-facing pages before login: dark top bar, big bright cards, dark footer.
+// Student-facing pages before login: white top bar, big sticker cards, dark footer.
 export default function PublicLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-ink-50">
-      <header className="bg-ink-900">
+    <div className="flex min-h-screen flex-col">
+      <header className="border-b-[3px] border-ink-900 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-          <Brand inverse />
-          <Link
-            href="/teacher/login"
-            className="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border-2 border-white/70 px-5 font-heading text-sm font-bold text-white transition-colors hover:border-white hover:bg-white hover:text-ink-900"
-          >
+          <Brand />
+          <Link href="/teacher/login" className={buttonClass('secondary', 'md', 'shrink-0')}>
             {mn.public.teacherLink}
           </Link>
         </div>

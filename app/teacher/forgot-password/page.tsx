@@ -11,7 +11,7 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
   const sent = param((await searchParams).sent);
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-black">{mn.teacherAuth.forgotTitle}</h1>
+      <h1 className="text-2xl font-extrabold">{mn.teacherAuth.forgotTitle}</h1>
       {sent ? (
         <Alert tone="success">{mn.teacherAuth.forgotSent}</Alert>
       ) : (
@@ -25,7 +25,7 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
           </Button>
         </form>
       )}
-      <Link href="/teacher/login" className="block text-center text-sm font-semibold text-brand-700 hover:underline">
+      <Link href="/teacher/login" className="block text-center text-sm font-extrabold text-brand-600 hover:underline">
         {mn.teacherAuth.backToLogin}
       </Link>
     </div>

@@ -5,7 +5,7 @@ import { Flash } from '@/components/teacher/Flash';
 import { Badge, Button, Card, ClassChip, Field, Input, PageHeader, Select, tableClass, tdClass, thClass } from '@/components/ui';
 import { addNote, deleteNote, resetPicturePassword, transferStudent, updateStudent } from '@/features/classes/actions';
 import { requireTeacher } from '@/lib/auth/teacher';
-import { animalEmoji, ATTENDANCE_STATUSES, ATTENDANCE_STYLE, isUuid } from '@/lib/constants';
+import { ATTENDANCE_STATUSES, ATTENDANCE_STYLE, isUuid } from '@/lib/constants';
 import { formatClock, formatDate } from '@/lib/mn/dates';
 import { displayName } from '@/lib/mn/names';
 import type { SearchParams } from '@/lib/params';
@@ -45,7 +45,7 @@ export default async function StudentProfilePage({
         subtitle={
           cls ? (
             <Link href={`/t/classes/${cls.id}`}>
-              <ClassChip name={cls.name} color={cls.color} emoji={animalEmoji(cls.animal_icon)} />
+              <ClassChip name={cls.name} color={cls.color} icon={cls.animal_icon} />
             </Link>
           ) : (
             <Badge tone="warning">{mn.students.left}</Badge>
@@ -59,7 +59,7 @@ export default async function StudentProfilePage({
           <Card title={mn.nav.attendance}>
             <div className="mb-4 flex flex-wrap gap-2">
               {ATTENDANCE_STATUSES.map((status) => (
-                <span key={status} className={`rounded-lg px-3 py-2 text-sm font-semibold ${ATTENDANCE_STYLE[status].cell}`}>
+                <span key={status} className={`rounded-xl border-2 border-ink-900 px-3 py-1.5 text-sm font-extrabold ${ATTENDANCE_STYLE[status].cell}`}>
                   {ATTENDANCE_STYLE[status].icon} {mn.attendanceStatus[status]}: {profile.attendance?.[status] ?? 0}
                 </span>
               ))}
@@ -83,7 +83,7 @@ export default async function StudentProfilePage({
                         <td className={`${tdClass} tabular-nums`}>{formatDate(a.held_on)}</td>
                         <td className={`${tdClass} tabular-nums`}>{a.period}</td>
                         <td className={tdClass}>
-                          <span className={`rounded px-2 py-0.5 text-xs font-semibold ${ATTENDANCE_STYLE[a.status].cell}`}>
+                          <span className={`rounded-md px-2 py-0.5 text-xs font-bold ${ATTENDANCE_STYLE[a.status].cell}`}>
                             {mn.attendanceStatus[a.status]}
                           </span>
                         </td>
@@ -110,7 +110,7 @@ export default async function StudentProfilePage({
             {profile.notes.length === 0 ? (
               <p className="text-sm text-slate-600">{mn.students.noNotes}</p>
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y-2 divide-dashed divide-ink-100">
                 {profile.notes.map((n) => (
                   <li key={n.id} className="flex items-start justify-between gap-3 py-3 text-sm">
                     <div>
