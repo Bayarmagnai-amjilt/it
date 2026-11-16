@@ -5,7 +5,7 @@ import { DeleteClassForm } from '@/components/teacher/DeleteClassForm';
 import { Flash } from '@/components/teacher/Flash';
 import { LessonButtons } from '@/components/teacher/LessonButtons';
 import { LogoPicker } from '@/components/teacher/LogoPicker';
-import { Alert, Badge, Button, buttonClass, Card, EmptyState, Field, PageHeader, Select } from '@/components/ui';
+import { Alert, Badge, Button, Card, EmptyState, Field, PageHeader, Select } from '@/components/ui';
 import { createClass, setClassStatus } from '@/features/classes/actions';
 import { requireTeacher } from '@/lib/auth/teacher';
 import { CLASS_COLORS, CLASS_SECTIONS, isLogoUrl } from '@/lib/constants';
@@ -67,7 +67,9 @@ export default async function ClassesPage({ searchParams }: { searchParams: Sear
                         {c.home_practice_enabled ? <Badge tone="warning">{mn.classes.homePracticeOn}</Badge> : null}
                       </div>
                       <LessonButtons classId={c.id} isOpen={Boolean(c.open_lesson_id)} returnTo="/t/classes" />
-                      <DeleteDisclosure classId={c.id} name={c.name} />
+                      <div className="border-t-2 border-dashed border-ink-100 pt-3">
+                        <DeleteClassForm classId={c.id} name={c.name} returnTo="/t/classes" compact />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -78,11 +80,11 @@ export default async function ClassesPage({ searchParams }: { searchParams: Sear
               <Card title={mn.classes.archivedTitle}>
                 <ul className="divide-y-2 divide-dashed divide-ink-100">
                   {archived.map((c) => (
-                    <li key={c.id} className="py-2">
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="font-semibold text-slate-700">
-                          <ClassLogo icon={c.animal_icon} /> {c.name}
-                        </span>
+                    <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 py-2">
+                      <span className="font-semibold text-slate-700">
+                        <ClassLogo icon={c.animal_icon} /> {c.name}
+                      </span>
+                      <div className="flex flex-wrap items-center gap-2">
                         <form action={setClassStatus}>
                           <input type="hidden" name="id" value={c.id} />
                           <input type="hidden" name="status" value="active" />
@@ -90,8 +92,8 @@ export default async function ClassesPage({ searchParams }: { searchParams: Sear
                             {mn.classes.restore}
                           </Button>
                         </form>
+                        <DeleteClassForm classId={c.id} name={c.name} returnTo="/t/classes" compact />
                       </div>
-                      <DeleteDisclosure classId={c.id} name={c.name} />
                     </li>
                   ))}
                 </ul>
@@ -145,22 +147,5 @@ export default async function ClassesPage({ searchParams }: { searchParams: Sear
         </div>
       )}
     </div>
-  );
-}
-
-/** "Delete class" under each class; it opens the confirmation instead of deleting at once. */
-function DeleteDisclosure({ classId, name }: { classId: string; name: string }) {
-  return (
-    <details className="group border-t-2 border-dashed border-ink-100 pt-3">
-      <summary className={buttonClass('danger', 'sm', 'cursor-pointer list-none [&::-webkit-details-marker]:hidden')}>
-        <span aria-hidden="true">🗑</span> {mn.classes.deleteTitle}
-        <span aria-hidden="true" className="transition-transform group-open:rotate-180">
-          ▾
-        </span>
-      </summary>
-      <div className="pt-3">
-        <DeleteClassForm classId={classId} name={name} returnTo="/t/classes" />
-      </div>
-    </details>
   );
 }
