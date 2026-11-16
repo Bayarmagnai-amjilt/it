@@ -19,6 +19,15 @@ export function isLogoUrl(value: string | null | undefined): value is string {
   return Boolean(SUPABASE_URL) && typeof value === 'string' && value.startsWith(LOGO_URL_PREFIX);
 }
 
+// Quiz question pictures: bucket 'quiz-media', files at '<teacher id>/<name>'.
+export const QUIZ_MEDIA_BUCKET = 'quiz-media';
+export const QUIZ_IMAGE_PIXELS = 800;
+const QUIZ_MEDIA_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/${QUIZ_MEDIA_BUCKET}/`;
+
+export function isQuizImageUrl(value: string | null | undefined): value is string {
+  return Boolean(SUPABASE_URL) && typeof value === 'string' && value.startsWith(QUIZ_MEDIA_PREFIX);
+}
+
 export const CLASS_COLORS = [
   '#F59E0B', '#EF4444', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899',
   '#14B8A6', '#F97316', '#6366F1', '#84CC16', '#06B6D4', '#D946EF',

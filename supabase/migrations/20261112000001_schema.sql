@@ -33,7 +33,7 @@ create type attempt_status        as enum ('in_progress', 'submitted', 'graded')
 create type live_state            as enum ('lobby', 'question', 'reveal', 'finished');
 create type practice_kind         as enum ('typing', 'blocks', 'mouse', 'daily_quiz');
 create type typing_level          as enum ('home_row', 'all_letters', 'words', 'sentences', 'proverbs');
-create type puzzle_game           as enum ('maze', 'turtle', 'herder');
+create type puzzle_game           as enum ('maze', 'turtle', 'herder', 'bird');
 create type lesson_template       as enum (
   'characters', 'explore', 'sort', 'assemble', 'riddle', 'flow',
   'custom_sort', 'custom_hotspot', 'custom_steps');

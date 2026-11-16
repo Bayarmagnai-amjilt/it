@@ -13,7 +13,7 @@ const ITEMS: { href: string; label: string; icon: string; soon?: boolean }[] = [
   { href: '/t/students', label: mn.nav.students, icon: '🧒' },
   { href: '/t/attendance', label: mn.nav.attendance, icon: '✅' },
   { href: '/t/grades', label: mn.nav.grades, icon: '📒' },
-  { href: '/t/quizzes', label: mn.nav.quizzes, icon: '❓', soon: true },
+  { href: '/t/quizzes', label: mn.nav.quizzes, icon: '❓' },
   { href: '/t/practice', label: mn.nav.practice, icon: '⌨️', soon: true },
   { href: '/t/scratch', label: mn.nav.scratch, icon: '🐱', soon: true },
   { href: '/t/lessons', label: mn.nav.lessons, icon: '🖥️', soon: true },

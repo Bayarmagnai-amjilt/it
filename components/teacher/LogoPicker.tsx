@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { Button, buttonClass, cn } from '@/components/ui';
 import { isLogoUrl, LOGO_MAX_BYTES, LOGO_PIXELS, LOGO_TYPES } from '@/lib/constants';
+import { shrinkImage } from '@/lib/shrink-image';
 import { mn } from '@/locales/mn';
 
 /**
@@ -29,7 +30,7 @@ export function LogoPicker({ current }: { current?: string }) {
     const input = e.currentTarget;
     const picked = input.files?.[0];
     if (!picked) return;
-    const file = await shrink(picked);
+    const file = await shrinkImage(picked, LOGO_PIXELS);
     if (!LOGO_TYPES[file.type] || file.size > LOGO_MAX_BYTES) {
       input.value = '';
       setBad(true);
@@ -90,26 +91,3 @@ export function LogoPicker({ current }: { current?: string }) {
   );
 }
 
-/**
- * Scales a picture down to LOGO_PIXELS on its longer side, so even a phone
- * photo becomes a few kilobytes. GIFs stay as they are (they may be animated).
- * Returns the original file if the browser cannot do it.
- */
-async function shrink(file: File): Promise<File> {
-  if (!file.type.startsWith('image/') || file.type === 'image/gif') return file;
-  try {
-    const bitmap = await createImageBitmap(file);
-    const scale = Math.min(1, LOGO_PIXELS / Math.max(bitmap.width, bitmap.height));
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-    canvas.getContext('2d')?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    bitmap.close();
-    // browsers without WebP encoding hand back a PNG instead
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/webp', 0.9));
-    if (!blob || !LOGO_TYPES[blob.type]) return file;
-    return new File([blob], `logo.${LOGO_TYPES[blob.type]}`, { type: blob.type });
-  } catch {
-    return file;
-  }
-}
