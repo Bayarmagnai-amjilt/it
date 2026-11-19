@@ -74,6 +74,19 @@ export function formatClock(timestamp: string | null | undefined): string {
   );
 }
 
+/** Date and clock time of a timestamp, in Ulaanbaatar: "2026.11.16 14:05" */
+export function formatStamp(timestamp: string | null | undefined): string {
+  if (!timestamp) return '';
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-GB', {
+      timeZone: TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+    })
+      .formatToParts(new Date(timestamp))
+      .map((p) => [p.type, p.value]),
+  );
+  return `${parts.year}.${parts.month}.${parts.day} ${parts.hour}:${parts.minute}`;
+}
+
 /** File name of an export: 4Б_дүн_2026-11-12.xlsx */
 export function exportFileName(className: string, kind: string, now: Date = new Date()): string {
   const safe = className.replace(/[\\/:*?"<>|\s]+/g, '_');

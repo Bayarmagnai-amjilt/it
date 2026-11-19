@@ -118,11 +118,9 @@ export async function deleteClass(fd: FormData): Promise<void> {
   if (!isUuid(id)) redirect('/t/classes');
   const back = safeReturnTo(fd.get('return_to'), `/t/classes/${id}`);
   const supabase = await createClient();
-  const { data: cls } = await supabase.from('classes').select('name').eq('id', id).maybeSingle();
+  // the teacher already confirmed in the browser (DeleteClassForm)
+  const { data: cls } = await supabase.from('classes').select('id').eq('id', id).maybeSingle();
   if (!cls) redirect(flashUrl('/t/classes', 'error', 'not_allowed'));
-  if (text(fd, 'confirm_name').toLocaleUpperCase('mn') !== cls.name.toLocaleUpperCase('mn')) {
-    redirect(flashUrl(back, 'error', 'confirm_mismatch'));
-  }
   // Storage only lets a teacher of the class remove its files, so they go first
   await removeLogos(supabase, id);
   const { error } = await supabase.rpc('delete_class', { p_class_id: id });

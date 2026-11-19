@@ -109,9 +109,7 @@ export default async function ClassDetailPage({
                 {mn.lesson.kickAll}
               </Button>
             </form>
-            <a href="#delete-class" className={buttonClass('danger', 'sm')}>
-              <span aria-hidden="true">🗑</span> {mn.classes.deleteTitle}
-            </a>
+            <DeleteClassForm classId={id} name={cls.name} returnTo={back} compact />
           </>
         }
       />
@@ -369,11 +367,9 @@ export default async function ClassDetailPage({
             </form>
           </Card>
 
-          <div id="delete-class" className="scroll-mt-6">
-            <Card title={mn.classes.deleteTitle}>
-              <DeleteClassForm classId={id} name={cls.name} returnTo={back} />
-            </Card>
-          </div>
+          <Card title={mn.classes.deleteTitle}>
+            <DeleteClassForm classId={id} name={cls.name} returnTo={back} />
+          </Card>
         </div>
       </div>
     </div>
