@@ -26,14 +26,9 @@ export default async function QuizzesPage({ searchParams }: { searchParams: Sear
         title={mn.nav.quizzes}
         subtitle={mn.quiz.pageSubtitle}
         actions={
-          <>
-            <Link href="/t/games" className={buttonClass('secondary', 'md')}>
-              🧩 {mn.games.teacherTitle}
-            </Link>
-            <Link href="/t/quizzes/new" className={buttonClass('primary', 'md')}>
-              + {mn.quiz.newQuiz}
-            </Link>
-          </>
+          <Link href="/t/quizzes/new" className={buttonClass('primary', 'md')}>
+            + {mn.quiz.newQuiz}
+          </Link>
         }
       />
       <Flash params={sp} />
