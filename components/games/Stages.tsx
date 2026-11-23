@@ -1,5 +1,6 @@
-// The three game boards, drawn in SVG only (no image files). Each one replays
-// a run's steps up to `index`, so the player can animate by counting up.
+// The three game boards in SVG. The characters are pictures in public/games/
+// (drawn facing right); each board replays a run's steps up to `index`, so the
+// player can animate by counting up.
 import { findCell } from '@/lib/games/maze';
 import { targetSegments } from '@/lib/games/run';
 import type { BirdFrame, BirdLevel, Dir, MazeLevel, MazeStep, Segment, TurtleLevel, TurtleStep } from '@/lib/games/types';
@@ -7,19 +8,39 @@ import type { BirdFrame, BirdLevel, Dir, MazeLevel, MazeStep, Segment, TurtleLev
 const BOARD = 'block w-full rounded-2xl border-[3px] border-ink-900 bg-white shadow-brut';
 const CELL = 40;
 
-// --- "Унагын зам": a foal seen from above walks to its ger -------------------
-function Foal({ x, y, dir, bump }: { x: number; y: number; dir: Dir; bump: boolean }) {
+/**
+ * A character picture centred on (0, 0). It is never rotated (a side view turned
+ * upside down looks wrong); it is mirrored when the character goes left.
+ */
+function Sprite({ name, size, flip }: { name: 'foal' | 'bird' | 'turtle'; size: number; flip: boolean }) {
   return (
-    <g style={{ transform: `translate(${x}px, ${y}px) rotate(${dir * 90}deg)`, transition: 'transform 0.22s ease-in-out' }}>
+    <g transform={flip ? 'scale(-1 1)' : undefined}>
+      <image href={`/games/${name}.webp`} x={-size / 2} y={-size / 2} width={size} height={size} preserveAspectRatio="xMidYMid meet" />
+    </g>
+  );
+}
+
+/** Little arrow beside a character showing exactly where it is heading (SVG degrees: 0 = right, clockwise). */
+function Pointer({ angle, distance, size }: { angle: number; distance: number; size: number }) {
+  return (
+    <path
+      transform={`rotate(${angle})`}
+      d={`M ${distance + size} 0 L ${distance} ${-size * 0.75} L ${distance} ${size * 0.75} Z`}
+      fill="#fbbf24"
+      stroke="#1f1c3d"
+      strokeWidth={size * 0.2}
+      strokeLinejoin="round"
+    />
+  );
+}
+
+// --- "Унагын зам": the foal walks the grid to its ger ---------------------------
+function Foal({ x, y, dir, left, bump }: { x: number; y: number; dir: Dir; left: boolean; bump: boolean }) {
+  return (
+    <g style={{ transform: `translate(${x}px, ${y}px)`, transition: 'transform 0.22s ease-in-out' }}>
       <g className={bump ? 'shake' : undefined}>
-      {/* drawn facing north; rotated with the direction */}
-      <path d="M -4 12 Q 0 22 4 12" stroke="#5b3a1e" strokeWidth="3" fill="none" strokeLinecap="round" />
-      <ellipse cx="0" cy="3" rx="9" ry="13" fill="#b5713d" stroke="#1f1c3d" strokeWidth="2" />
-      <ellipse cx="0" cy="-12" rx="6" ry="7" fill="#c98550" stroke="#1f1c3d" strokeWidth="2" />
-      <path d="M 0 -6 L 0 10" stroke="#5b3a1e" strokeWidth="3" strokeLinecap="round" />
-      <path d="M -4 -18 L -5 -23 L -1 -19 Z M 4 -18 L 5 -23 L 1 -19 Z" fill="#5b3a1e" stroke="#1f1c3d" strokeWidth="1.2" />
-      <circle cx="-2.5" cy="-14" r="1.2" fill="#1f1c3d" />
-      <circle cx="2.5" cy="-14" r="1.2" fill="#1f1c3d" />
+        <Sprite name="foal" size={CELL * 0.95} flip={left} />
+        <Pointer angle={(dir - 1) * 90} distance={CELL * 0.4} size={7} />
       </g>
     </g>
   );
@@ -42,12 +63,17 @@ export function MazeStage({ level, steps, index }: { level: MazeLevel; steps: Ma
   let x = start.x;
   let y = start.y;
   let dir = level.startDir;
+  // facing north or south, the foal keeps looking the way it last went sideways
+  let left = dir === 3;
   let bump = false;
   for (const s of (steps ?? []).slice(0, index)) {
     if (s.kind === 'move') {
       x = s.x;
       y = s.y;
-    } else if (s.kind === 'turn') dir = s.dir;
+    } else if (s.kind === 'turn') {
+      dir = s.dir;
+      if (dir === 1 || dir === 3) left = dir === 3;
+    }
     bump = s.kind === 'bump';
   }
   const w = level.grid[0].length * CELL;
@@ -67,21 +93,19 @@ export function MazeStage({ level, steps, index }: { level: MazeLevel; steps: Ma
         ),
       )}
       <Ger x={goal.x * CELL + CELL / 2} y={goal.y * CELL + CELL / 2} />
-      <Foal x={x * CELL + CELL / 2} y={y * CELL + CELL / 2} dir={dir} bump={bump} />
+      <Foal x={x * CELL + CELL / 2} y={y * CELL + CELL / 2} dir={dir} left={left} bump={bump} />
     </svg>
   );
 }
 
 // --- "Шувуу": world 0..100 with y up, drawn with y flipped ---------------------
 function Bird({ x, y, heading }: { x: number; y: number; heading: number }) {
+  const left = Math.cos((heading * Math.PI) / 180) < -0.01;
   return (
-    <g transform={`translate(${x} ${100 - y}) rotate(${-heading})`}>
-      {/* drawn facing east */}
-      <path d="M -5 0 L -8 -4 L -2 -1 Z M -5 0 L -8 4 L -2 1 Z" fill="#4458f2" stroke="#1f1c3d" strokeWidth="0.6" />
-      <ellipse cx="0" cy="0" rx="5" ry="3.2" fill="#6b7cfb" stroke="#1f1c3d" strokeWidth="0.8" />
-      <path d="M -1 -1 Q 1 -6 3 -1" fill="#c3cbff" stroke="#1f1c3d" strokeWidth="0.6" />
-      <path d="M 5 -0.8 L 7.5 0 L 5 0.8 Z" fill="#fbbf24" stroke="#1f1c3d" strokeWidth="0.5" />
-      <circle cx="3" cy="-1" r="0.7" fill="#1f1c3d" />
+    <g transform={`translate(${x} ${100 - y})`}>
+      <Sprite name="bird" size={16} flip={left} />
+      {/* heading is maths-style (counter-clockwise, y up); SVG turns clockwise */}
+      <Pointer angle={-heading} distance={9} size={3.2} />
     </g>
   );
 }
@@ -134,16 +158,12 @@ export function BirdStage({
 
 // --- "Яст мэлхий": the grey target and the turtle's own drawing ----------------
 function TurtleShape({ x, y, heading }: { x: number; y: number; heading: number }) {
+  const left = Math.sin((heading * Math.PI) / 180) < -0.01;
   return (
-    <g transform={`translate(${x} ${y}) rotate(${heading})`}>
-      {/* drawn facing up */}
-      <ellipse cx="-5" cy="-3" rx="2" ry="1.6" fill="#22c493" stroke="#1f1c3d" strokeWidth="0.6" />
-      <ellipse cx="5" cy="-3" rx="2" ry="1.6" fill="#22c493" stroke="#1f1c3d" strokeWidth="0.6" />
-      <ellipse cx="-5" cy="4" rx="2" ry="1.6" fill="#22c493" stroke="#1f1c3d" strokeWidth="0.6" />
-      <ellipse cx="5" cy="4" rx="2" ry="1.6" fill="#22c493" stroke="#1f1c3d" strokeWidth="0.6" />
-      <circle cx="0" cy="-8" r="2.6" fill="#22c493" stroke="#1f1c3d" strokeWidth="0.6" />
-      <ellipse cx="0" cy="0.5" rx="5.5" ry="6.5" fill="#15835f" stroke="#1f1c3d" strokeWidth="0.8" />
-      <path d="M -3 -2 L 3 -2 L 3 3 L -3 3 Z" fill="none" stroke="#b3eedb" strokeWidth="0.6" />
+    <g transform={`translate(${x} ${y})`}>
+      <Sprite name="turtle" size={28} flip={left} />
+      {/* turtle heading: 0° = up, clockwise; SVG 0° = right */}
+      <Pointer angle={heading - 90} distance={16} size={5.5} />
     </g>
   );
 }
