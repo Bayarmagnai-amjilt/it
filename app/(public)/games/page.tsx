@@ -10,7 +10,8 @@ import { mn } from '@/locales/mn';
 export const metadata: Metadata = { title: mn.games.title };
 export const dynamic = 'force-dynamic';
 
-const ICONS = { maze: '🐴', bird: '🐦', turtle: '🐢' } as const;
+// character pictures in public/games/
+const PICTURES = { maze: 'foal', bird: 'bird', turtle: 'turtle' } as const;
 const COLORS = { maze: 'bg-sun-100', bird: 'bg-brand-50', turtle: 'bg-mint-100' } as const;
 
 // Anyone can play; a logged-in student's stars and levels are saved.
@@ -36,7 +37,8 @@ export default async function GamesPage() {
               href={`/games/${game}`}
               className={`lift flex h-full flex-col gap-3 rounded-3xl border-[3px] border-ink-900 p-6 shadow-brut ${COLORS[game]}`}
             >
-              <span className="text-6xl" aria-hidden="true">{ICONS[game]}</span>
+              {/* eslint-disable-next-line @next/next/no-img-element -- a small local picture */}
+              <img src={`/games/${PICTURES[game]}.webp`} alt="" width={112} height={112} className="h-28 w-28 object-contain" />
               <span className="text-2xl font-extrabold text-ink-900">{mn.games.names[game]}</span>
               <span className="font-semibold text-slate-700">{mn.games.descriptions[game]}</span>
               <span className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-2">
